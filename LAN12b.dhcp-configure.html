@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>DHCP configuration</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2016-12-31"/>
+<base href="https://montcs.bloomu.edu" />
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    /*width:8.5in;*/
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#f7f7f7;border:1px dotted #666;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+ul.compact {
+    /* list-style: inside url(python-cursor.png); */
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.prompt,
+pre { background:#e0e0e0; }
+
+.answerline {
+    display:inline-block;
+    width:2in;
+    height:0.50in;
+    border:1px solid #ddd;
+    border-bottom:1px solid #000;
+    vertical-align:middle;
+}
+
+li {margin-bottom:2ex;}
+
+fake {font-weight:bold;}
+
+/*
+.fake::before {content: "_"}
+.fake::after {content: "_"}
+*/
+
+table.referencetable {
+    float:left;
+    margin-left:2em;
+    border-collapse:collapse;
+    border:2px solid #00f;
+}
+table.referencetable thead {
+    border-bottom:2px solid #00f;
+}
+table.referencetable tbody {
+    font-family:monospace;
+}
+table.referencetable tr {
+    border: 1px solid #000;
+}
+table.referencetable th {
+    border-left: 2px solid #00f;
+}
+table.referencetable td {
+    text-align:right;
+    border: 1px dotted #000;
+}
+table.referencetable .gray {
+    color:#999;
+}
+table.referencetable .red {
+    color:#a00;
+}
+
+/*
+pre.prompt::before {
+    content:"vyos# ";
+    color:#0000d7;
+    font-weight:bold;
+}
+pre.prompt2::before {
+    content:":~$ ";
+    color:#0000d7;
+    font-weight:bold;
+}
+*/
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+</head><body class="" >
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>DHCP Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+<h1 class="clearboth">Use DHCP In Your LAN</h1>
+In this worksheet you will reconfigure your private network to get IP addresses from DHCP.
+
+<div class=""><!-- DHCP -->
+<h2>Configure the clients for DHCP</h2>
+
+<h3>Windows VM</h3>
+<img class="floatright" src="/VM-LAN/IPv4-DHCP.png" alt="IPv4 DHCP dialog" />
+<ol><li>
+    Start your Windows VM, and login.
+</li><li>
+    Select "Start-Button -&gt; Control Panel -&gt; Network and Internet".
+    <p>
+    Click on "View network status and tasks" under "Network and Sharing Center".
+    </p><p>
+    Click on "Change adapter settings" on the left.
+    </p>
+</li><li>
+    Right-click the Local Area Connection network.
+    Choose "Properties".
+</li><li>
+    Find and select the line "Internet Protocol Version 4 (TCP/IPv4)".
+    Then click on the Properties button.
+</li><li>
+    Click the button for "Obtain an IP address automatically"
+</li><li>
+    Click the button for "Obtain DNS server address automatically"
+</li><li>
+    Click on the"OK" button.
+    Then click on the parent dialog's "Close" button.
+</li><li>
+    Open a command prompt, and run the command <code>ipconfig /renew</code>.
+    It will run for awhile, then fail with an "Unable to connect to DHCP server" message &mdash; because the DHCP server isn't set up yet.
+    <p>
+    Run the command <code>ipconfig</code> (without the option).
+    You should see a <em>link-local</em> (<em>APIPA</em>) IP address, one that starts with "169.254..."
+    This is a valid IP address, but it won't connect to anything; it serves as a null default value.
+    </p>
+
+</li></ol>
+
+<h3>Linux VM &mdash; DHCP</h3>
+<img class="floatright" width="30%" src="/VM-LAN/Linux-dhcp.png" alt="Linux DHCP dialog" />
+<ol><li>
+    Start your Linux VM, and login.
+</li><li>
+    Click on the Start button in the lower left corner.
+    <p>
+    Choose "Preferences", then choose "Network Connections".
+    </p>
+</li><li>
+    Choose your Ethernet connection (probably called "Wired connection 1"), then click on "Edit".
+</li><li>
+    Choose the "IPv4 Settings" tab.
+</li><li>
+    Set the Method (at the top) to "Automatic (DHCP)".
+</li><li>
+    Click on the "Save..." button, then the "Close" button in the Network Connections window.
+<br class="clearboth"/>
+<img class="floatright" src="/VM-LAN/Linux-dhcp2.png" alt="Linux network control" />
+<p>&nbsp;</p>
+
+</li><li class="">
+    Click on the "network" icon in the lower right (circled in red in the figure), and turn off "Enable networking".
+    Then click on the icon again, and re-enable the network.
+
+</li><li>
+    Run <code>ifconfig</code> in a terminal.
+    The "enp0s3" interface doesn't have any IP address &mdash; Linux doesn't need or use APIPA addresses.
+</li></ol>
+</div><!-- DHCP -->
+
+<hr/>
+
+<h2>Reconfigure your access router</h2>
+<p>
+In the previous exercise you calculated your private LAN's subnet ID, your router's IP address, and the starting and ending IP addresses for the clients &mdash; the range of DHCP addresses.
+Use these values for the following steps.
+</p>
+<p>
+Start your VyOS VM and login to the router, using account "vyos" and password "vyos".
+<br/>
+Enter these commands (for more information, see <a href="http://vyos.net/wiki/User_Guide">http://vyos.net/wiki/User_Guide</a>):
+</p>
+<ul><li>
+    Start the configuration:
+<pre class="prompt2 boxed">
+configure
+</pre>
+</li><li>
+    Configure a DHCP server to hand out IP addresses automatically.
+    In the following, you can skip comment lines that begin with a "#".
+<pre class="prompt boxed">
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+<span class="Remark fancyfont"># Set dhcp server on private LAN's gateway router.</span>
+<span class="Remark fancyfont"># Fill in the correct values from the worksheet for items enclosed in <span class="fake">&thinsp;</span>.</span>
+<span class="Remark fancyfont"># (Don't include the <span class="fake">&thinsp;</span> marks.)</span>
+<span class="Remark fancyfont"># 2016-12-29</span>
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+
+set service dhcp-server disabled 'false'
+
+set service dhcp-server shared-network-name LAN authoritative 'enable'
+
+set service dhcp-server shared-network-name LAN subnet '<span class="fake">subnet-address</span><strong>/</strong><span class="fake">CIDR-bits</span>'  default-router '<span class="fake">router's-IP-address</span>'
+set service dhcp-server shared-network-name LAN subnet '<span class="fake">subnet-address</span><strong>/</strong><span class="fake">CIDR-bits</span>'  dns-server '<span class="fake">router's-IP-address</span>'
+set service dhcp-server shared-network-name LAN subnet '<span class="fake">subnet-address</span><strong>/</strong><span class="fake">CIDR-bits</span>'  domain-name 'INSIDE'
+set service dhcp-server shared-network-name LAN subnet '<span class="fake">subnet-address</span><strong>/</strong><span class="fake">CIDR-bits</span>'  lease '86400'
+
+set service dhcp-server shared-network-name LAN subnet '<span class="fake">subnet-address</span><strong>/</strong><span class="fake">CIDR-bits</span>'  start '<span class="fake">first-client-address</span>'<span class="">  stop '<span class="fake">last-client-address</span>'</span>&nbsp;
+<span class="Remark fancyfont Remark">#-----------------------------------------------------------</span>
+</pre>
+
+    <p>
+    Check your work with the command:
+    </p>
+<pre class="prompt boxed">
+show service
+</pre>
+    If it doesn't look right, <span class="prompt boxed">del&nbsp;</span> the incorrect lines, and re-enter them correctly.
+    <p>&nbsp;</p>
+</li><li>
+    Apply the configuration:
+<pre class="prompt boxed">
+commit
+</pre>
+</li><li>
+    Save the configuration for future reboots:
+<pre class="prompt boxed">
+save
+</pre>
+</li><li>
+    ... and quit:
+<pre class="prompt boxed">
+exit
+</pre>
+</li></ul>
+
+<hr/>
+
+<div class=""><!-- DHCP -->
+<h2>Give the clients DHCP addresses</h2>
+The Windows and Linux VMs need to connect to the DHCP server.
+
+<h3>Windows VM &mdash; DHCP</h3>
+<ol><li>
+   In a command prompt, and run the command <code>ipconfig /renew</code> again.
+   Then run the command <code>ipconfig</code> again.
+    <p>
+    This time you should see an IP address come up as the starting DHCP address.
+    If it is still a link-local address then something your DHCP server isn't set up right.
+    </p>
+</li></ol>
+
+<h3>Linux VM &mdash; DHCP</h3>
+<ol><li>
+<img class="floatright" src="/VM-LAN/Linux-dhcp2.png" alt="Linux network control" />
+    Click on the "network" icon in the lower right, and turn off "Enable networking".
+    Then click on the icon again, and re-enable the network.
+</li><li>
+    If you run <code>ifconfig</code> in a terminal now, you should see that your VM has an IP address, perhaps one greater than your Windows client's address.
+</li></ol>
+</div><!-- DHCP -->
+
+<hr/>
+
+<h2>Test DHCP</h2>
+<ul><li>
+    Restart all three VMs --- router, Linux VM, Windows VM.
+</li><li>
+    Inspect the IP address on each VM.
+    How do they compare to the "start" and "stop" values set for the dhcp-server service on the router?
+</li><li>
+    Ping each of your VMs from another one, using its given IP address.
+    You should be able to reach each VM.
+</li><li>
+    Try pinging the VMs on your neighbor's physical host.
+    Assuming your neighbor's router and clients are all running, you should be able to ping those machines as well as your own.
+</li></ul>
+
+<h4>
+Congratulations!  You've set up DHCP on your LAN.
+</h4>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

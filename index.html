@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<title>VM-LAN exercises</title>
+<meta name="date" content="2017-09-03" />
+<style type="text/css">
+@import url("https://montcs.bloomu.edu/css/generic.css");
+
+ol.index {list-style-type:upper-alpha;}
+ol.index li ol {list-style-type:lower-alpha;}
+ol>li {
+    margin-top:0.5ex;
+    margin-bottom:2ex;
+    margin-left:0;
+    border-top:1px dashed #333;
+    padding-top:1.0ex;
+}
+ol>li>ol>li {
+    border:none;
+    margin-bottom:1ex;
+    margin-left:0;
+}
+h3 {
+    border-top:1px solid #000;
+    padding-top:1ex;
+}
+
+</style>
+</head><body>
+<h1>VM-LAN: Virtual Network</h1>
+
+<h3>VM-LAN Exercises</h3>
+
+<ol class="index">
+<li id="A">
+    Set up virtual networked clients in Virtualbox
+    <ol class="compact"><li id="00a" class="HIDE">
+        <a href="LAN00a.Win7.html">install Windows client</a>
+        Initial setup of a a Windows 7 host, from an .ISO image.
+    </li><li id="00b">
+        <a href="LAN00b.Lubuntu.html">install Linux client</a>
+        Initial setup of a Linux host, from an .ISO image.
+    </li><li id="00c">
+        <a href="LAN00c.Win7-ova.html">install Windows client</a>
+        Initial setup of a a Windows 7 host, from an .OVA appliance.
+    </li><li id="00z">
+        <a href="LAN00z.verify.html">verify client communications</a>
+        Communicate between Windos and Linux clients, and create a backup copy.
+    </li></ol>
+</li>
+
+<li id="B"><a href="LAN02.neighbor-discovery.html">Layer-2 neighbor discovery</a>
+<br/>Use Wireshark to observe MS' LLTD and IEEE 803.1ab's LLDP layer-2 protocols in action.
+</li>
+
+<li id="C"><a href="LAN04.asn.scapy.html"><strong>ASSIGNMENT</strong>: craft LAN frames with scapy</a>
+<br/>Create Ethernet frames and payloads, and observe them in scapy and in Wireshark.
+</li>
+
+<li id="D"><a href="LAN06.static-LAN.html">set static IP addresses</a>
+<br/>Give the hosts static private IP addresses, verify that they can only communicate with each other.
+</li>
+
+<li id="E"><a href="LAN08.access-router.html">install access router</a>
+<br/>Add VyOS router appliance to the private LAN; it should connect to other students' routers through the physical lab's switch.
+</li>
+
+<li id="F"><a href="LAN10.asn.scapy2.html"><strong>ASSIGNMENT</strong>: Send IP  and TCP packets with scapy</a>
+<br/>Create and send Layer-3/Layer-4 packets.
+</li>
+
+<li id="G">
+    Set up dynamic IP addresses
+    <ol class="compact"><li id="05a">
+        <a href="LAN12a.dhcp-calc.html">Calculate subnet values</a>
+        Work out a subnet for DHCP to manage.
+    </li><li id="05b">
+        <a href="LAN12b.dhcp-configure.html">Configure DHCP</a>
+        Set up DHCP using the calculated subnet values.
+    </li></ol>
+</li>
+
+<li id="H">
+    Set up and use an FTP server
+    <ol class="compact"><li id="" class="">
+        <a href="LAN14.ftp-service.html">install Windows' FTP server</a>
+    </li><li id="">
+        <a href="LAN16.asn.ftp-server.html"><strong>ASSIGNMENT</strong>: Examine the FTP protocol</a>
+        <br/>Upload files with FTP.
+    </li></ol>
+</li>
+
+<li id="I"><a href="LAN18.gateway-router.html">add Internet-connected gateway-router</a>
+<br/>Add another router that provides a link via VirtualBox's manager to the outside world.
+</li>
+
+<li id="J"><a href="LAN20.asn.traceroutes.html"><strong>ASSIGNMENT</strong>: Demonstrate connection to the Internet</a>
+<br/>Perform traceroutes to the Internet, and upload the results to the course website.
+</li>
+
+<li id="H_alt" class="HIDE"><a href="LAN.servers.html">add web and FTP servers</a>
+<br/>Try out a simple webserver and an FTP server; observe their traffic in Wireshark.
+</li>
+
+</ol>
+
+<h3>VM-LAN presentation</h3>
+<ul><li>
+    <a href="VM-LAN-paper.pdf">Conference presentation on VM-LAN</a>
+</li></ul>
+
+</body></html>

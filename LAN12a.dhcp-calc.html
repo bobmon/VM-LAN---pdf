@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>DHCP calculation</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2016-12-31"/>
+<base href="https://montcs.bloomu.edu" />
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#f7f7f7;border:1px dotted #666;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+ul.compact {
+    /* list-style: inside url(python-cursor.png); */
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.prompt,
+pre { background:#e0e0e0; }
+
+.answerline {
+    display:inline-block;
+    width:2in;
+    height:0.50in;
+    border:1px solid #ddd;
+    border-bottom:1px solid #000;
+    vertical-align:middle;
+    background:#ffd;
+}
+.ANSWER {
+     display:none;
+    color:#d33;
+    font-family: "Gosmick Sans", "Comic Sans MS", "Domestic Manners", "El Abogado Loco", "Kristen ITC", "Lucida Calligraphy", "Tempus Sans ITC", "Monotype Corsiva", "Papyrus", cursive;
+}
+
+li {margin-bottom:2ex;}
+
+fake {font-weight:bold;}
+
+/*
+.fake::before {content: "_"}
+.fake::after {content: "_"}
+*/
+
+table.referencetable {
+    float:left;
+    margin-left:2em;
+    border-collapse:collapse;
+    border:2px solid #00f;
+}
+table.referencetable thead {
+    border-bottom:2px solid #00f;
+}
+table.referencetable tbody {
+    font-family:monospace;
+}
+table.referencetable tr {
+    border: 1px solid #000;
+}
+table.referencetable th {
+    border-left: 2px solid #00f;
+}
+table.referencetable td {
+    text-align:right;
+    border: 1px dotted #000;
+}
+table.referencetable .gray {
+    color:#999;
+}
+table.referencetable .red {
+    color:#a00;
+}
+
+/*
+pre.prompt::before {
+    content:"vyos# ";
+    color:#0000d7;
+    font-weight:bold;
+}
+pre.prompt2::before {
+    content:":~$ ";
+    color:#0000d7;
+    font-weight:bold;
+}
+*/
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+</head><body class="" >
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>DHCP Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+<h1 class="clearboth">Use DHCP In Your LAN</h1>
+In this worksheet you will work out a subnet mask for your private network.
+Then you will use it to reconfigure your private network so it gets IP addresses by DHCP.
+<p>
+Some of the values you calculate in this worksheet are tagged <span class="fake">like this</span>.
+These values will be plugged into other parts of this worksheet, and into the configuration commands that you will use in the next worksheet.
+
+</p>
+
+<hr/>
+
+<h2>Work out a subnet and subnet mask for your private LAN.</h2>
+<p>
+Start with the network 192.168.<strong class="fancyfont red">x</strong>.0/24 (replace the value "<strong class="fancyfont red">x</strong>" with the last part of your physical host's IP address, its campus host ID).
+You will create a subnet that can hold 10 hosts.
+</p><p>
+There are reference tables at the end of this section, showing binary patterns.
+These may help in answering the following questions.
+</p>
+<ol><li>
+The original netmask has 24 "1" bits in it.
+How many <em>available</em> host bits are left over?
+<br/>
+(<em>Hint</em>: address size minus network bits.)
+<span class="answerline">&nbsp;</span>
+<p>
+The <em>available</em> host bits will be divided into host-ID bits and subnet-ID bits.
+</p>
+
+</li><li>
+How many host bits do you need, to count at least 10 hosts?
+<span class="answerline">&nbsp;</span>
+<br/>
+These are your subnet's host-ID bits.
+They will be the rightmost of your <em>available</em> host bits.
+</li><li>
+How many of the <em>available</em> host bits are left over, to count subnets?
+<span class="answerline">&nbsp;</span>
+<br/>
+These will be your subnet-ID bits, and they are the leftmost of your <em>available</em> host bits.
+<br/>
+How many subnets can you count, using these bits?
+<span class="answerline">&nbsp;</span>
+</li><li>
+The new subnet mask consists of the original netmask's 24 "1" bits followed by the subnet-ID bits.
+How many total bits is this?
+<br/>
+<span class="answerline">&nbsp;</span> <span class="fake">CIDR-bits</span>
+<br/>
+Use this value when the configuration worksheet asks for <span class="fake">CIDR-bits</span>.
+</li><li>
+Write this new subnet mask out in binary, padded on the right with 0s to reach 32 bits:
+<span class="answerline">&nbsp;</span>
+<br/>
+Write the subnet mask again, in dotted-decimal form.
+<span class="answerline">&nbsp;</span>
+<p>&nbsp;</p>
+
+</li><li>
+You must use the fourth subnet &mdash; subnet-ID 3.
+Write the value "3" in binary, using as many bits as you have subnet-ID bits.
+<br/>
+<span class="answerline">&nbsp;</span> <span class="fake">subnet-ID</span>
+</li><li>
+Pad the <span class="fake">subnet-ID</span> on the right with 0's to match the number of host-ID bits, and write the result in dotted-decimal form.
+<span class="answerline">&nbsp;</span>
+<br/>
+Append this to the original <span style="font-size:105%">192.168.<strong class="fancyfont red">x</strong></span> network ID, to form a 32-bit subnet address:
+<br/>
+<span class="answerline">&nbsp;</span> <span class="fake">subnet-address</span>
+
+</li><li>
+Your VyOS router VM will have host-ID <em>1</em>.
+Write the <span class="fake">subnet-ID</span> bits, followed by the host-ID bits for <em>1</em>, to make the binary form of the router's <em>available</em> host bits.
+<span class="answerline">&nbsp;</span><span class="ANSWER">00110001</span>
+<br/>
+Then write this number in decimal form:
+<span class="answerline">&nbsp;</span><span class="ANSWER">49</span>
+</li><li>
+Combine the original network ID, 192.168.<strong class="fancyfont red">x</strong>, with the <em>available</em> host bits you just calculated, to form your <span class="fake">router's-IP-address</span>:
+<span class="answerline">&nbsp;</span><span class="ANSWER">192.168.1.49</span>
+
+</li><li>
+Your <em>first client address</em> (starting DHCP address) has host-ID <em>4</em>.
+Write the subnet-ID bits for <em>3</em> followed by the host-ID bits for <em>4</em>, to make the binary form of the original <em>available</em> host bits.
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">00110100</span>
+Then write this number in decimal form:
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">52</span>
+</li><li>
+Combine the original network ID, 192.168.<strong class="fancyfont red">x</strong>, with the starting DHCP address, to form your
+<br/><span class="fake">first-client-address</span>
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">192.168.1.52</span>
+
+</li><li>
+Your subnet's broadcast address has host-ID in which all bits are "1".
+Write the subnet-ID bits for <em>3</em> followed, by the "all-1s" host-ID bits, to make the binary form of the original <em>available</em> host bits.
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">00111111</span>
+<br/>
+Then write this number in decimal form:
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">63</span>
+<p>
+This is your subnet's broadcast address.
+</p>
+</li><li>
+Your <em>stopping DHCP address</em> will be one less than the broadcast address.
+Write the <em>stopping DHCP address</em> in decimal form:
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">62</span>
+<br/>
+Then combine the original network ID, 192.168.<strong class="fancyfont red">x</strong>, with the <em>stopping DHCP address</em> to form your
+<br/>
+<span class="fake">last-client-address</span>:
+<span class="answerline">&nbsp;</span>
+<span class="ANSWER">192.168.1.62</span>
+
+</li></ol>
+Whew!
+
+<h3 class="newpage">Reference tables</h3>
+
+<table class="referencetable"><thead>
+<tr><th>Power<br/>of 2</th><th>Value</th></tr>
+</thead><tbody>
+<tr><td class="gray">2<sup class="red">0</sup> </td><td>&thinsp;    1</td></tr>
+<tr><td class="gray">2<sup class="red">1</sup> </td><td>&thinsp;    2</td></tr>
+<tr><td class="gray">2<sup class="red">2</sup> </td><td>&thinsp;    4</td></tr>
+<tr><td class="gray">2<sup class="red">3</sup> </td><td>&thinsp;    8</td></tr>
+<tr><td class="gray">2<sup class="red">4</sup> </td><td>&thinsp;   16</td></tr>
+<tr><td class="gray">2<sup class="red">5</sup> </td><td>&thinsp;   32</td></tr>
+<tr><td class="gray">2<sup class="red">6</sup> </td><td>&thinsp;   64</td></tr>
+<tr><td class="gray">2<sup class="red">7</sup> </td><td>&thinsp;  128</td></tr>
+<tr><td class="gray">2<sup class="red">8</sup> </td><td>&thinsp;  256</td></tr>
+<tr><td class="gray">2<sup class="red">9</sup> </td><td>&thinsp;  512</td></tr>
+<tr><td class="gray">2<sup class="red">10</sup></td><td>&thinsp; 1024</td></tr>
+<tr class="HIDE"><td class="gray">2<sup class="red">11</sup></td><td>&thinsp; 2048</td></tr>
+<tr class="HIDE"><td class="gray">2<sup class="red">12</sup></td><td>&thinsp; 4096</td></tr>
+<tr class="HIDE"><td class="gray">2<sup class="red">13</sup></td><td>&thinsp; 8192</td></tr>
+<tr class="HIDE"><td class="gray">2<sup class="red">14</sup></td><td>&thinsp;16384</td></tr>
+<tr class="HIDE"><td class="gray">2<sup class="red">15</sup></td><td>&thinsp;32768</td></tr>
+<tr class="HIDE"><td class="gray">2<sup class="red">16</sup></td><td>&thinsp;65536</td></tr>
+</tbody></table>
+
+<table class="referencetable smaller"><thead>
+<tr><th>bit<br/>pos'n</th><th>Bit Pattern</th><th>Value</th></tr>
+</thead><tbody>
+<tr><td>0</td><th> 0000<span style="font-size:35%">&thinsp;</span>0001 </th><td> 1</td></tr>
+<tr><td>1</td><th> 0000<span style="font-size:35%">&thinsp;</span>0010 </th><td> 2</td></tr>
+<tr><td>2</td><th> 0000<span style="font-size:35%">&thinsp;</span>0100 </th><td> 4</td></tr>
+<tr><td>3</td><th> 0000<span style="font-size:35%">&thinsp;</span>1000 </th><td> 8</td></tr>
+<tr><td>4</td><th> 0001<span style="font-size:35%">&thinsp;</span>0000 </th><td> 16</td></tr>
+<tr><td>5</td><th> 0010<span style="font-size:35%">&thinsp;</span>0000 </th><td> 32</td></tr>
+<tr><td>6</td><th> 0100<span style="font-size:35%">&thinsp;</span>0000 </th><td> 64</td></tr>
+<tr><td>7</td><th> 1000<span style="font-size:35%">&thinsp;</span>0000 </th><td> 128</td></tr>
+</tbody></table>
+
+<table class="referencetable"><thead>
+<tr><th># of<br/>1 bits</th><th>Bit Pattern</th><th>Value</th></tr>
+</thead><tbody>
+<tr><td>0</td><th> 0000<span style="font-size:35%">&thinsp;</span>0000 </th><td> 0</td></tr>
+<tr><td>1</td><th> 1000<span style="font-size:35%">&thinsp;</span>0000 </th><td> 128</td></tr>
+<tr><td>2</td><th> 1100<span style="font-size:35%">&thinsp;</span>0000 </th><td> 192</td></tr>
+<tr><td>3</td><th> 1110<span style="font-size:35%">&thinsp;</span>0000 </th><td> 224</td></tr>
+<tr><td>4</td><th> 1111<span style="font-size:35%">&thinsp;</span>0000 </th><td> 240</td></tr>
+<tr><td>5</td><th> 1111<span style="font-size:35%">&thinsp;</span>1000 </th><td> 248</td></tr>
+<tr><td>6</td><th> 1111<span style="font-size:35%">&thinsp;</span>1100 </th><td> 252</td></tr>
+<tr><td>7</td><th> 1111<span style="font-size:35%">&thinsp;</span>1110 </th><td> 254</td></tr>
+<tr><td>8</td><th> 1111<span style="font-size:35%">&thinsp;</span>1111 </th><td> 255</td></tr>
+</tbody></table>
+
+<table class="referencetable smaller"><thead>
+<tr>
+    <th rowspan=2>Bit<br/>Pattern</th><th colspan=2>Value</th>
+    <th rowspan=2>Bit<br/>Pattern</th><th colspan=2>Value</th>
+</tr>
+<tr>
+    <th>Hexa-<br/>dec-<br/>imal</th><th>Dec-<br/>imal</th>
+    <th>Hexa-<br/>dec-<br/>imal</th><th>Dec-<br/>imal</th>
+</tr>
+</thead><tbody>
+<tr> <th> 0000 </th><td> 0</td><td> 0</td> <th> 1000 </th><td> 8</td><td> 8</td> </tr>
+<tr> <th> 0001 </th><td> 1</td><td> 1</td> <th> 1001 </th><td> 9</td><td> 9</td> </tr>
+<tr> <th> 0010 </th><td> 2</td><td> 2</td> <th> 1010 </th><td> a</td><td>10</td> </tr>
+<tr> <th> 0011 </th><td> 3</td><td> 3</td> <th> 1011 </th><td> b</td><td>11</td> </tr>
+<tr> <th> 0100 </th><td> 4</td><td> 4</td> <th> 1100 </th><td> c</td><td>12</td> </tr>
+<tr> <th> 0101 </th><td> 5</td><td> 5</td> <th> 1101 </th><td> d</td><td>13</td> </tr>
+<tr> <th> 0110 </th><td> 6</td><td> 6</td> <th> 1110 </th><td> e</td><td>14</td> </tr>
+<tr> <th> 0111 </th><td> 7</td><td> 7</td> <th> 1111 </th><td> f</td><td>15</td> </tr>
+</tbody></table>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

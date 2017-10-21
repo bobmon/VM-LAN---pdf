@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scapy Assignment</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-25"/>
+<base href="https://montcs.bloomu.edu" />
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+.user {
+    font-family:"Gosmick Sans", "Comic Sans MS","Papyrus","Purisa","URW Chancery L",fantasy;
+    color:#608;
+}
+comment,
+em.smaller{font-weight:normal;color:#050}
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.25in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol {margin-top:1ex;list-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.filter {
+    padding:2px;
+    color:#000;background:#dfd;
+    border:1px dotted #666;
+    font-weight:normal;
+}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;
+    border:1px dotted #666;
+    font-size:105%;
+    font-weight:normal;
+}
+div.code {page-break-inside:avoid;}
+
+pre {background:#e0e0e0}
+
+ul.python {
+    margin-left:2em;
+    margin-top:0.5ex;
+    list-style:outside '>>> ';
+}
+ul.code li,
+ul.python li {
+    border:none;
+    padding-top:0.2ex;
+    padding-bottom:0.0ex;
+    margin-bottom:0.5ex;
+}
+
+ul.compact {
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+<script type="text/javascript" src="/js/numQs.js"></script>
+</head>
+<body onload="numberItems('Question&nbsp;', 'inum');">
+<div id="title">
+<p class="asn">Network assignment:<br/>Scapy and Wireshark</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<p class="clearboth">
+This assignment explores the Scapy package and Ethernet.
+</p>
+<p>
+You need to do this assignment on your virtual network.
+(If you have set up a virtual network on your personal computer, you can do it there.)
+</p>
+
+<div class="smaller">
+<h3>assignment format</h3>
+<p>
+This assignment contains labeled, numbered questions that  need written answers.
+Other questions are for you to think about, but don't need a written
+answer.
+</p>
+<p>
+Write the answers in a text file or word-processor document, then upload the file through
+the "Submit" link on the course webpage.
+You may also write out the answers by hand if necessary.
+</p>
+<p>
+ Format the answer file like this:
+</p>
+<div class="code inset smaller width550"><pre>
+    YOUR NAME
+    Assignment name/number
+    Date
+
+    1.  Answer to first question.
+        <em style="font-size:80%;color:#600">(Example:  "I installed the Windows version in a virtual
+        machine running DOS 3.21.  I started it using the DOS
+        command RUN WIRESHARK IN WINDOWS.  This doesn't work.")</em>
+
+    2.  Answer to second question.
+        <em style="font-size:80%;color:#600">(Example:  "My network interface is called Billy.")</em>
+
+    3.  Answer to third question.
+
+    ...  and so forth.
+</pre></div>
+</div>
+
+<h1>Craft Ethernet frames using "scapy" in Python</h1>
+<img class="floatright" src="/VM-LAN/Ethernet-headers.png" width="50%" alt="Ethernet headers" />
+
+<p>
+In this assignment you will set up the "scapy" package, which provides Python tools.
+Then you'll use it to "craft" (create by hand) and send Ethernet frames.
+</p><p>
+This provides the ability to create LAN frames with specific characteristics, such as 
+"ping" packets carrying data.
+</p>
+
+<h3>Set up the scapy package in Linux</h3>
+Scapy is a network-packet-manipulation package that runs under Python 2.5 or later.
+You will install scapy in your Linux VM, which should have Python installed by default.
+<p>
+Scapy is available for python 3.x and also for python 2.x
+The newer python 3.x is preferred and will be used for this exercise.
+
+<h4>Python 3.x</h4>
+Start your Linux VM, and open a terminal in it.
+<p>
+Obtain scapy and install it into python:
+</p>
+<ol><li>
+    Run the command
+<pre class="boxed"><span class="HIDE">cd ~/
+cp <strong>~/MadData/DIGFOR275-All/VM-LAN/scapy-master-python3.zip</strong>  ~/</span>
+wget&nbsp;--no-check-certificate&nbsp;https://montcs.bloomu.edu/Networking/Software/VM-LAN/scapy-master-python3.zip
+</pre>
+    to copy the package to your VM.
+</li><li class="">
+    Unpack and install the package.
+    Enter these commands, one at a time:
+<pre class="boxed">
+unzip scapy-master-python3.zip
+
+cd scapy-master/
+sudo python3 setup.py install
+</pre>
+</li><li class="">
+    Add graphic capabilities to scapy with this command:
+<pre class="boxed">
+sudo apt install texlive python3-pyx python3-matplotlib graphviz
+</pre>
+    This may take a few minutes.
+</li></ol>
+
+<hr/>
+
+<h2>Prepare for trying scapy</h2>
+Start your Windows VM and your Linux VM.
+
+<ol><li>
+    Find the MAC address for your Windows VM by doing these steps:
+    <ol class="compact"><li>
+        Start a command prompt on your Windows VM.
+    </li><li>
+        Run the command <code>ipconfig/all</code>.
+    </li><li>
+        Find the line that looks like
+        <br/>
+        <strong>"<tt>Physical&nbsp;Address&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;:&nbsp;08-00-27-58-78-29</tt></strong>".
+        <p>
+        The last part will be different, and is your Windows MAC address.
+        Windows shows MAC addresses as six hexadecimal numbers, separated by dashes (-).
+        However, most software writes MAC addresses with colons (:) instead of dashes.
+        </p>
+    </li><li>
+        Find the line that looks like
+        <br/>
+        <strong>"<tt>IPv4&nbsp;Address&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;:&nbsp;10.0.2.14</tt></strong>".
+        <p>
+        The last number may be different, and is your Windows IP address.
+        </p>
+    </li></ol>
+
+</li><li>
+    Do these steps in a terminal on your Linux VM.
+    <ol class="compact"><li>
+        Run the command <code>ifconfig</code>.
+    </li><li>
+        The first line should look like
+        <br/>
+        <strong>"<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enp0s3&nbsp;&nbsp;&nbsp;&nbsp;Link&nbsp;encap:Ethernet&nbsp;&nbsp;HWaddr&nbsp;08:00:27:3e:11:01</tt>"</strong>.
+        <p>
+        The last part will be different, and is your Linux MAC address.
+        </p>
+    </li><li>
+        The second line should look like
+        <br/>
+        <strong>"<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inet&nbsp;addr:10.0.2.16&nbsp;&nbsp;Bcast:10.0.2.255&nbsp;&nbsp;Mask:255.255.255.0</tt>"</strong>.
+        <p>
+        The first part is your Linux IP address, the second part is the "broadcast address", and the last part is the "network mask" or "subnet mask".
+        The subnet mask describes which part of the IP address is the network itself, as opposed to the host part.
+        For this address, the first three numbers &mdash; 10.0.2 &mdash; are the network, and the last number &mdash; 16 &mdash; is the host.
+        The host changes from machine to machine, while the network should stay constant.
+        </p>
+    </li></ol>
+
+</li><li>
+    From your Linux VM's terminal, run the command <code>sudo wireshark</code>.
+    <ol class="compact"><li>
+        Select the "enp0s3" interface.
+    </li><li>
+        Click on "Start".
+    </li></ol>
+
+</li></ol>
+
+<hr/>
+
+<h2>Initial exploration</h2>
+Use scapy to work with the Datalink layer (layer 2) of the OSI model.
+Any LAN is based on a primary protocol that operates at this layer, as well as some supporting protocols that provide information.
+<ol><li class="">
+    Start another terminal in your Linux VM.
+</li><li>
+    From the terminal run Python in "scapy mode" by entering these commands:
+<pre class="code">
+cd
+sudo scapy
+</pre>
+    It will prompt you for Python commands by showing the prompt "<tt style="color:#88f;">&gt;&gt;&gt;</tt>".
+
+</li><li>
+    The basic Layer-2 protocol used to send data is Ethernet.
+    Enter these commands into scapy to create and send out a bare Ethernet frame:
+    <ul class="python code"><li>
+        Ether().show()    <span class="smaller fancyfont"># Look at the Ethernet header fields</span>
+    </li><li>
+        len(Ether())    <span class="smaller fancyfont"># length of Ethernet header
+    </li><li>
+        sendp(Ether())  <span class="smaller fancyfont"># send out a bare Ethernet frame</span>
+    </li></ul>
+    The "sendp()" command transmits Ethernet frames directly.
+
+</li><li>
+    Create a graphical representation of the frame with this command:
+    <ul class="python code"><li>
+        Ether().pdfdump('ether.pdf')    <span class="smaller fancyfont"># create .pdf file of Ethernet headers</span>
+    </li></ul>
+    From a new terminal, issue the commands:
+<pre class="boxed">
+cd
+evince ether.pdf
+</pre>
+    This should show the fields of the Ethernet header.
+
+</li><li>
+    Look at the Wireshark window.
+    You should see a packet whose protocol is given as "LOOP".
+    In Wireshark's middle pane, expand the Ethernet line.
+    You should see three fields, the same three that scapy showed for its basic Ethernet frame.
+
+    <p>
+    Answer these questions:
+    </p>
+    <p class="inum">
+    How many bytes long are the destination and source addresses?
+    </p>
+    <p class="inum">
+    How many bytes long is the type field?
+    </p>
+    <p class="inum">
+    How many bytes long is the entire frame?
+    </p><p class="inum">
+    Does Wireshark think this is a valid Ethernet frame?
+    </p>
+
+</li></ol>
+
+<h2>ARP protocol</h2>
+Create a valid Layer-2 frame by setting the source address and adding a payload.
+The payload is an ARP packet, used to match IP addresses with MAC addresses.
+<ol><li class="">
+    Enter these commands, replacing <tt>10.0.2.<span class="fancyfont">WinIP</span></tt> with the IP address of your Windows VM:
+    <ul class="python code"><li>
+        my_interface = get_working_if()
+    </li><li>
+        myMAC = get_if_hwaddr(my_interface)
+    </li><li>
+        print(my_interface, myMAC)      <span class="smaller fancyfont"># "ifconfig" showed these values</span>
+    </li><li>
+        ehdr = Ether(src=myMAC,type=0x0806)
+    </li><li>
+        ahdr = ARP(pdst='10.0.2.<span class="fancyfont">WinIP</span>')   <span class="smaller fancyfont"># use your Windows IP address here</span>
+    </li><li>
+        len(ahdr)
+    </li><li>
+        ahdr.show()     <span class="smaller fancyfont"># ARP header fields</span>
+    </li><li>
+        padstr = '\x00' * (60 - len(ehdr) - len(ahdr))
+    </li><li>
+        pad = Padding(load=padstr)      <span class="smaller fancyfont"># a bunch of 0-bytes</span>
+    </li><li>
+        frame = ehdr/ahdr/pad
+    </li><li>
+        len(frame)
+    </li><li>
+        frame.show()
+    </li></ul>
+    <p class="inum">
+    Look at the output from the ".show()" command.
+    How many separate protocols are used in this frame, and what are they?
+    (Hint: "Padding" isn't a protocol, it's just a bunch of 0-bytes added to make the frame long enough.  It's considered to be part of the Ethernet protocol.)
+    </p>
+
+</li><li>
+    Create a graphical representation of the frame:
+    <ul class="python code"><li>
+        frame.pdfdump('frame.pdf')    <span class="smaller fancyfont"># create .pdf file
+    </li></ul>
+    From a terminal, issue the commands:
+<pre class="boxed">
+evince frame.pdf
+</pre>
+    This shows all the fields of the frame, in hexadecimal, on the right; and the line to the analyses of the fields, on the left.
+
+</li><li>
+    Send the frame out, get a response and show it, and observe it in Wireshark.
+    Do this in scapy:
+    <ul class="python code"><li>
+        response = srp1(frame,&nbsp;iface=my_interface)
+    </li><li>
+        response.show()
+    </li><li>
+        myMAC   <span class="smaller fancyfont"># redisplay the Linux MAC address</span>
+    </li></ul>
+    In wireshark, set a display filter.
+    For <span class="fake red">HWaddr</span> substitute the MAC address shown by "ifconfig" or by "myMAC".
+    (You should be able to copy and paste the MAC address from the scapy window to the Wireshark display filter.)
+    <div class="filter width300">
+        eth.addr==<span class="fake red">HWaddr</span> &amp;&amp; arp
+    </div>
+    You should see (at least) two frames; the first one is the frame you sent out from scapy, and the second is the response that came back.
+    (If there are more than two frames, these should be the last two captured.)
+    For each frame, Wireshark's middle pane shows all the distinct protocols in it &mdash; you should see the same protocols seen in the ".show()" command output.
+
+    <p class="inum">
+    How many bytes long are these frames?
+    Does Wireshark think these are valid Ethernet frames?
+    </p><p class="inum">
+    Look at the response either in scapy, or either Wireshark.
+    What MAC address corresponds to the IP address "10.0.2.<span class="fancyfont">WinIP</span>"?
+    (Hint: find "hwdst" field or the "Target MAC address" line.)
+    How does this compare to the value that "<tt>ipconfig/all</tt>" showed you?
+    </p>
+
+</li><li>
+    Wireshark's bottom pane shows a hexadecimal display of the selected frame.
+    Select the response frame, and observe the hexadecimal display.
+    If you select specific header fields within the frame (in the middle pane), the corresponding bytes will be highlighted in the hexadecimal display.
+    <p>
+    Now enter this command into scapy:
+    <ul class="python code"><li>
+        hexdump(response)
+    </li></ul>
+    You should see another hexadecimal dump, matching the display in Wireshark.
+
+</li><li>
+    Look at the response graphically:
+    <ul class="python code"><li>
+        response.pdfdump('arpresponse.pdf')    <span class="smaller fancyfont"># create .pdf file
+    </li></ul>
+    From a terminal, issue the commands:
+<pre class="boxed">
+evince arpresponse.pdf
+</pre>
+    How does this compare to the scapy "hexdump" command, and Wireshark's bottom pane?
+    Which do you find easiest to understand?
+
+</li></ol>
+
+<h2>Make scapy act like the "ping" command</h2>
+The "ping" command, used to check connectivity, is makes use of layer-3 protocols that depend in turn on layer-2 protocols.
+Now you will create a ping packet, and look at the response to it.
+In all the following, replace "<tt>10.0.2.<span class="fancyfont">WinIP</span></tt>" with your Windows VM's IP address.
+
+<ol><li class="">
+    "Ping" is based on the Internet Control Message Protocol, ICMP.
+    Create a ping packet, and put them together:
+    <ul class="python code"><li>
+        ICMP().show()
+    </li><li>
+        icmp = ICMP(seq=999)
+    </li><li>
+        ip = IP(dst='10.0.2.<span class="fancyfont">WinIP</span>')
+    </li><li>
+        pingpacket = ip/icmp
+    </li><li>
+        pingpacket.show()
+    </li></ul>
+    <p class="inum">
+    What distinct protocols are included in this packet?
+    </p><p class="inum">
+    What are the values of the ICMP "type" field and "seq" field?
+    </p>
+
+</li><li>
+    Put this packet into an Ethernet frame, send it out, and collect the response:
+    <ul class="python code"><li>
+        eth = Ether()
+    </li><li>
+        pinglen = 60 - len(eth) - len(pingpacket)
+    </li><li>
+        msg = ' Secret message ' + '\x00'*60
+    </li><li>
+        pad = Padding( load=msg[:pinglen] )
+    </li><li>
+        pingframe = eth/pingpacket/pad
+    </li><li>
+        pingframe.show()
+    </li><li>
+        pingresponse = srp1(pingframe)
+    </li><li>
+        pingresponse.show()
+    </li></ul>
+    <p class="inum">
+    What distinct protocols are included in the response?
+    </p><p class="inum">
+    What are the values of the ICMP "type" field and "seq" field?
+    </p>
+
+</li><li class="">
+    Make a drawing of the response:
+    <ul class="python code"><li>
+        pingresponse.pdfdump('pingresponse.pdf')    <span class="smaller fancyfont"># create .pdf file
+    </li></ul>
+    From a terminal, issue the commands:
+<pre class="boxed">
+evince pingresponse.pdf
+</pre>
+    Was the secret message returned?
+
+</li><li>
+    Put this display filter into Wireshark, and look at the packets:
+    <div class="filter width250">
+        ip.addr==<span class="fake red">WinIP</span>
+    </div>
+    </p><p class="inum">
+    In Wireshark's top pane, what is the timestamp of the packet that scapy sent?
+    (This is the second column from the next, labeled "Time".
+    You may need to widen the column by dragging the right edge of the label to the right.)
+    What is the timestamp of the next packet, the response?
+    What is the difference between them?
+    </p>
+    This difference is the "round-trip time", which the ping program reports; it is typically a few tens of milliseconds.
+
+</li></ol>
+<p>
+Notice that, besides the normal ping packet with padding, this frame carried a secret message which the machine being pinged would be able to see.
+This technique is one way to exfiltrate information from a compromised computer.
+</p>
+
+<h2>"Craft" an LLDP packet</h2>
+Build up a fake LLDP packet in scapy, and send it out.
+This should fool any other host that is scanning for LLDP neighbors.
+<p>
+To see this, start your Windows VM, and run the "LLDP Agent" program.
+(You should have a desktop icon for this.
+If you don't, click on <strong>Start menu &rarr; All Programs &rarr; haneWIN Software &rarr; LLDP Agent</strong>.)
+Leave it running.
+</p>
+<ol><li class="">
+    In scapy, build the LLDP payload.
+    <p>
+    To make this easier, copy each of these Python3 lines &mdash; one at a time &mdash; from the listing, and paste them into scapy.
+    You may find it convenient to use the keyboard shortcut <strong>&lt;Shift&gt;&lt;Ctrl&gt;v</strong> to paste into scapy; or just right-click and choose "Paste" from the menu.
+    </p>
+
+    <ul class="python code"><li>
+        chassis = bytearray(7)
+    </li><li>
+        chassis[0:3] = (0x02,0x06,0x07)
+    </li><li>
+        chassis[3:] = str.encode('fakey', 'utf-8')
+
+    </li><li>
+        sysname = bytearray(7)
+    </li><li>
+        sysname[0:2] = (0x0a,0x05)
+    </li><li>
+        sysname[2:] = str.encode('Lies!', 'utf-8')
+
+    </li><li>
+        sysdesc = bytearray(12)
+    </li><li>
+        sysdesc[0:2] = (0x0c,0x0a)
+    </li><li>
+        sysdesc[2:] = str.encode('MS-DOS 1.0', 'utf-8')
+
+    </li><li>
+        portID = bytearray( (0x04,0x07,0x03, 0x00,0x01,0x02,0xff,0xfe,0xfd) )    <span class="smaller fancyfont"># fake MAC address</span>
+
+    </li><li>
+        TTL = bytearray( (0x06,0x02, 0x00,0x78) )
+
+    </li><li>
+        end = bytearray( (0x00, 0x00) )
+
+    </li><li>
+        payload = bytes( chassis + portID + TTL + sysname + sysdesc + end )
+    </li></ul>
+
+</li><li>
+    Build a frame carrying the payload:
+    <ul class="python code"><li>
+        mac_lldp_multicast = '01:80:c2:00:00:0e'
+    </li><li>
+        eth = Ether(src='00:01:02:ff:fe:fd', dst=mac_lldp_multicast, type=0x88cc)
+    </li><li>
+        frame = eth / Raw(load=bytes(payload)) / Padding(b'\x00\x00\x00\x00')
+    </li><li>
+        frame.len()    <span class="smaller fancyfont"># should be 60, minimum Ethernet frame length</span>
+    </li><li>
+        frame.show()
+    </li></ul>
+
+</li><li>
+    Set a display filter in wireshark: <span class="filter">lldp</span>.
+    Stop wireshark if it's running, and then start it up (to get a fresh capture).
+    <p>
+    Send the frame:
+    </p>
+    <ul class="python code"><li>
+        import time
+    </li><li>
+        for i in range(12):
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;sendp(frame)
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;time.sleep(10)
+    </li></ul>
+
+</li><li>
+    Observe your wireshark capture.
+    You may need to wait about 10 seconds, then you should see your fake LLDP frame.
+    You should also see LLDP frames from your Windows and Linux VMs (after up to 30 seconds).
+    <p>
+    Look at the "LLDP Agent" window in Windows.  Do you see your fake host?
+
+    <p>
+    Answer these questions:
+    </p>
+    <p class="inum">
+    What does "LLDP Agent" think is the fake host's operating system?
+    </p>
+    <p class="inum">
+    What does "LLDP Agent" think is the fake host's IP address?
+    </p>
+    <p class="inum">
+    Why is the Padding necessary?
+    </p>
+    <p class="inum">
+    In wireshark, compare your LLDP frame to one of the others (from Linux or from Windows).
+    What LLDP fields does the other frame include, that yours is missing?
+    Could you add these, if you wanted to?
+    </p>
+
+</li></ol>
+
+<h3>shut down</h3>
+<p>
+<span class="HIDE">In scapy, stop the flood by pressing Ctrl-C.</span>
+
+Close down scapy by entering the <code>exit()</code> command.
+Also close the Wireshark window.
+You needn't save anything.
+Shut down your VMs.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

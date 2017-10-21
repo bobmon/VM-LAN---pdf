@@ -1,0 +1,432 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Networking Worksheet</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-07"/>
+<base href="https://montcs.bloomu.edu"/>
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol { margin-top:1ex;list-style-type:decimal;}
+ol li { margin-top:0ex; margin-bottom:3ex; padding-top:4px; border-top:1px dotted #999;}
+ol ol { margin-top:1ex;list-style-type:lower-alpha;}
+ul li {margin-top:0.5ex;margin-bottom:1.5ex; padding-top:4px;}
+
+img {
+    margin:0;
+    padding:0;
+    border:1px solid #000;
+}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    font-family: monospace;
+    font-size:100%;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+.code, code,
+pre {background:#e0e0e0}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+.fancyfont {
+    color:#a33;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+
+</head><body class="">
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>VM-setup Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<h1>Setting up Virtual Machines &mdash; Linux client</h1>
+
+<img class="floatright width300" src="/VM-LAN/VM-network.0d.svg" alt="two VMs" />
+
+In this worksheet you will set up a Linux Virtual Machine, and check out communications between it and your Windows VM and their Internet gateway using Wireshark.
+The machine will have a simple user account, called "virt" and with password "virt" so that nobody forgets their account or password.
+
+<p>
+Some terminology:
+</p>
+<ul class=""><li>
+    The actual computer that you're using is called the <em>physical host</em>.
+</li><li>
+    It will run a program called a <em>virtual machine manager (VM manager)</em>; we will be using the VirtualBox VM manager.
+    The VM manager provides the Internet gateway.
+</li><li>
+    Within it, you will configure and run some <em>virtual machines</em> or <em>VMs</em>, each one running an operating system (such as Windows 7 or Linux).
+</li><li>
+    Your first VMs are <em>clients</em>; later on you will add two router VMs as well.
+</li><li>
+    Your physical host has an IP address that looks like: <strong>148.137.141.<span class="fancyfont">x</span></strong>; the value <span class="fancyfont">x</span> is your virtual network's <em>system number</em>, and will be used repeatedly to identify your VMs.
+    Your system number should be a value somewhere between 80 and 126.
+</li></ul>
+
+<!-- ............................................................. -->
+
+<hr/>
+<h2>Set up and Start the VirtualBox VM Manager</h2>
+If you haven't already done this, do it now:
+<ol><li>
+    First open a terminal on your physical host.
+</li><li>
+    Run the <code class="boxed">ifconfig</code> command.
+    Note your IP (inet) address <span class="HIDE">and MAC (HWaddr or ether) address</span> for later reference.
+    It should look like <tt>148.137.141.</tt><strong class="fancyfont">&lt;host#&gt;</strong> where the "<strong class="fancyfont">&lt;host#&gt;</strong>" varies from host to host.
+    <em>Remember</em> the number <strong class="fancyfont">&lt;host#&gt;</strong> &mdash; this is your network's system number, and you will use it repeatedly in configuring your network.
+    <div class="HIDE width400 height200 boxed"> </div>
+
+</li><li class="">
+    <p>
+    If you haven't already, use the <code class="boxed">mountmadhome</code> command to mount your "M:" drive as the "MadHome" directory in your home directory.
+    You will need about 20GB free on your "MadHome" drive.
+    </p>
+
+</li><li>
+    Run the command <code class="boxed">virtualbox</code> from the command line, or find the link from the start menu.
+
+</li><li>
+    In the Oracle VM Virtualbox Manager window, click on:
+    <strong>File &rarr; Preferences &rarr; General</strong>
+
+</li><li class="">
+    Set the Default Machine Folder to be a folder in MadHome.
+    You should create a folder to hold VMs (and other files) for this course.
+
+</li><li class="">
+    Click on
+    <strong>File &rarr; Preferences &rarr; Network</strong>
+    </p>
+</li><li>
+    In the "<u>N</u>AT Networks" tab, click the "Plus" icon on the right.
+    <p>
+    You should see a new named network, perhaps "NatNetwork".
+    Whatever the name is, remember it.
+    </p>
+
+</li><li>
+    Click on "OK".
+</li></ol>
+
+<hr/>
+<h2>Linux VM</h2>
+<h3>Install Linux</h3>
+<ol><li>
+    Click on "New" from the VM manager window.
+    <ol class=""><li>
+    Name this machine "<strong>Linux-<span class="fancyfont">&lt;host#&gt;</span></strong>", where "<strong class="fancyfont">&lt;host#&gt;</strong>" is the last number of your physical host's IP address (<em>e.g.</em> 106 or 118).
+    <br/>
+    Set the "Type" and "Version" as Linux and Ubuntu (64-bit), and click on "Next &gt;".
+    </li><li>
+    Set the Memory at 2048 MB, and click on "Next &gt;".
+    </li><li>
+    Check "Create a virtual hard drive now", and click on "Create".
+    </li><li>
+    Check "VDI (VirtualBox Disk Image)", and click on "Next &gt;".
+    </li><li>
+    Check "Dynamically allocated", and click on "Next &gt;".
+    </li><li>
+    Set the virtual hard drive size to at least 16 GB, and click on "Create".
+    </li></ol>
+
+</li><li>
+    Select your Linux VM, and click on <strong>Settings</strong>.
+    <ol class=""><li>
+        Click on <strong>Storage</strong> on the left.
+    </li><li>
+        Click on the "Empty" item in the Storage tree in the middle.
+    </li><li>
+        On the far right, click on the circular icon (bluish, looks kind of like a CD or DVD).
+    </li><li class="HIDE">
+        Click on "Choose Virtual Optical Disk File..."
+        and browse to "<strong>MadData/DIGFOR275-all/VM-LAN/</strong>" in your home directory.
+    </li><li>
+        Click on "Choose Virtual Optical Disk File..."
+        and browse to "<strong>/iso-files/</strong>" in your physical host's root directory.
+    </li><li>
+        Double-click (or Open) the Lubuntu (or Ubuntu) .iso file.
+
+    </li><li class="">
+        Click on <strong>Network</strong> (on the left).
+    </li><li class="">
+        The Adapter 1 tab, near the middle, is (probably) currently attached to "NAT".
+        Change it to be attached to "NAT network".
+        <p>
+        Select the same name that was added to the "<u>N</u>AT Networks" earlier.
+        </p>
+    </li><li class="">
+        Click the word "Advanced" (near the middle of the Adapter 1 tab) to expand it.
+    </li><li class="">
+        Click the box next to "Promiscuous Mode" and choose "Allow All".
+    </li><li class="">
+        Verify that the "Cable Connected" box is checked.
+
+    </li><li>
+        Click <strong>OK</strong> in the lower right corner.
+    </li></ol>
+
+</li><li>
+    <p class="em">
+    Some parts of this step will take a little while, copying files from the .ISO image.
+    To save some time, you can begin the Windows installation while you wait.
+    </p>
+
+    Select your Linux VM again, and click on the <strong>Start</strong> icon.
+    <ol class=""><li>
+        Choose your preferred language (English?).
+        Choose to Install the operating system.
+    </li><li>
+        Accept the default values for most of the prompts.
+        Do not download updates while installing or install third-party software.
+    </li><li>
+        Select "Erase disk and install..." and install the operating system.
+    </li><li>
+        You will get a confirmation dialog to "write changes to disks"; the default will be "Go Back".
+        <p>
+        Instead, choose "Continue".
+        </p>
+    </li><li>
+        Select "Eastern Time" (New York time) for the time and date settings, and "Continue".
+    </li><li>
+        In some of the dialog boxes &mdash; e.g., "Keyboard layout" &mdash; you may have trouble seeing the buttons to click on.
+        <p>
+        Click-and-hold on the window's title bar to grab it, and drag the window to the left enough to see the buttons.
+        </p>
+    </li><li>
+        Create a user named "virt", with password "virt" (the default machine name is acceptable).
+    </li></ol>
+
+</li><li>
+    At this point, you can start setting up the Windows VM while you wait.
+
+</li></ol>
+
+<h3>Configure Linux</h3>
+<ol><li>
+    <img class="floatright width400" src="/VM-LAN/remove-disk-from-virtual-drive.png" alt="remove disk" />
+    When the installation is done, reboot your new Linux VM.
+    <ol class=""><li>
+        While it's shutting down, click on the "Devices" menu (above the main screen).
+    </li><li>
+        Choose "Optical Drives".
+    </li><li>
+        Click on "Remove disk from virtual drive".
+        (It may be grayed out, in which case it is already removed.)
+    </li></ol>
+
+</li><li>
+    Login to Linux, using account "virt" and password "virt".
+    <ol class=""><li>
+        Click on the "Start" icon in the lower left (or upper left) corner of the screen.
+    </li><li>
+        Check the System tools menu for a "terminal" program and start it.
+        <br/>
+        (Likely names for the terminal include "LXTerminal" or "Konsole".)
+        <p>
+        For convenience, you may wish to right-click the terminal entry and "Add to Desktop" so that it's easier to find in the future.
+        </p>
+
+    </li><li>
+        <img class="floatright width400" src="/VM-LAN/ifconfig.png" alt="ifconfig" />
+        Run the command <code class="boxed">ifconfig</code>.
+        <p>
+        Find your VM's IP address &mdash; it should be something similar to "10.0.2.6".
+        </p>
+    </li><li>
+        Run the command <code class="boxed">ping&nbsp;-c&nbsp;3&nbsp;4.2.2.2</code> to determine whether you're connected to the Internet.
+        (You should be.)
+    </li><li>
+        Run the command <code class="boxed">ping&nbsp;-c&nbsp;3&nbsp;google.com</code> to determine whether your VM can resolve domain names.
+        (This should also work.)
+        <p>
+        (Notice that "google.com" has been resolved to a completely different name, and an IP address.
+        This was done by the DNS protocol, which will be discussed later in the semester.)
+        </p>
+    </li><li>
+        If you see a tab at the bottom of the window, labeled "Software Update", then
+        your installation is offering to update some of its files.
+        DON'T do this yet, or it will delay the rest of the configuration.
+    </li></ol>
+
+</li><li>
+    Now set up for copy-and-paste between your VM and your physical host.
+    Click on the "Devices" menu above the main screen again.
+    <ol class=""><li>
+        Choose "Shared Clipboard".
+    </li><li>
+        Click on "Bidirectional".
+    </li></ol>
+
+</li></ol>
+
+<h4>Install additional software in Linux</h4>
+Add some software that will be used in further lab exercises, and update the system overall.
+<p>
+"Build-essential" is a package of tools used in building other applications.
+Wireshark is a packet-analysis application, also known as a "packet sniffer".
+Traceroute is a program that discovers the network path between your host and another machine on the Internet.
+Zenmap is a GUI frontend to nmap, which is a "port sniffer" that tests one or more network hosts and looks for openings.
+</p>
+
+<p>
+Run all these commands in a terminal (open one up if it isn't already open).
+</p>
+<ol><li>
+Run the command:
+<pre class="boxed">
+sudo apt install build-essential wireshark traceroute zenmap ipython3
+</pre>
+and reply "<strong>y</strong>" when prompted to continue.
+<p>
+This will take a few minutes.
+If you are asked whether to allow non-superusers to capture packets, choose "No".
+This means that you will need to run wireshark as root (using "sudo").
+</p>
+
+</li><li>
+Run the commands:
+<pre class="boxed">
+sudo apt update
+</pre>
+followed by
+<pre class="boxed">
+sudo apt upgrade
+</pre>
+and reply "<strong>y</strong>" when prompted to continue.
+
+</li></ol>
+
+
+<h4>Make your VM resize-able</h4>
+Click on the "Devices" menu (above the main screen) again.
+<ol><li>
+    Choose "Install Guest Additions CD image".
+    <p>
+    If necessary, force the unmount of whatever is already mounted, and mount the Guest Additions CD instead.
+    </p>
+    <p>
+    You may be prompted to open the CD in a file manager.
+    This is unnecessary, but you can do it if you wish.
+    </p>
+
+</li><li>
+    Look at the mounted CD:
+<pre class="boxed">
+ls /media/virt
+</pre>
+    You should see a listing with the name of the CD, similar to "VBOXADDITIONS_5.1.12_112440".
+
+</li><li>
+    You want to change into this subdirectory, without having to type the whole long path.
+    Enter this command, finishing it by pressing the <tt>Tab</tt> key (left side of the keyboard) and then the <tt>Enter</tt> key:
+<pre class="boxed">
+cd /media/virt/<span class="fancyfont">&lt;<tt>Tab</tt>&gt;</span>
+</pre>
+    Your terminal prompt should change to "<tt>/media/virt/VBOXADDITIONS_5.1.12_112440</tt>" (or very similar) to reflect the new working directory.
+
+</li><li>
+    Verify what you have:
+<pre class="boxed">
+ls
+</pre>
+
+</li><li>
+    Run the "VBoxLinuxAdditions.run" program with root privileges:
+<pre class="boxed">
+sudo ./VBoxLinuxAdditions.run
+</pre>
+    Enter the "virt" password.
+    <p>
+    Let the program finish running.
+    </p>
+
+</li><li>
+    Reboot Linux.
+    There are multiple ways of doing this:
+    <ul class="compact"><li>
+        click the "X" in the upper right corner of the window and choose "Send the shutdown signal"
+    </li><li>
+        click the button in the lower left, choose "Logout", then choose "Reboot"
+    </li><li>
+        enter the command <code class="boxed">sudo reboot</code> from a command line.
+    </li></ul>
+    Do it however you prefer.
+    <ol class=""><li>
+        While it's rebooting, click on the "Devices" menu (above the Windows screen).
+    </li><li>
+        Choose "Optical Drives".
+    </li><li>
+        Click on "Remove disk from virtual drive".
+    </li><li>
+        If asked, click on "Force unmount".
+    </li></ol>
+
+</li></ol>
+
+<p>
+After rebooting, you should be able to resize the Linux VM's window by dragging the lower-right corner to the desired size.
+</p>
+
+<hr/>
+<!-- ............................................................. -->
+
+<h2>Next steps</h2>
+<p>
+After installing the Windows VM as well, do the "client verification" worksheet.
+This will verify communication between your VMs.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

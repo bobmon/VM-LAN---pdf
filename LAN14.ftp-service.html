@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>ftp-server Worksheet</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-14"/>
+<base href="https://montcs.bloomu.edu">
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol {margin-top:1ex;list-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;border:1px dotted #666;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+pre { background:#e0e0e0; }
+
+/*
+pre.prompt::before {
+    content:"vyos# ";
+    color:#0000d7;
+    font-weight:bold;
+}
+pre.prompt2::before {
+    content:":~$ ";
+    color:#0000d7;
+    font-weight:bold;
+}
+*/
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+
+</head><body class="">
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>FTP Server Worksheet</p>
+</div><!-- title -->
+<!-- ==================================================================== -->
+
+<h1 style="clear:left">Add An FTP Server to Your Windows VM</h1>
+In this worksheet you will start Windows' FTP service.
+<p>
+FTP (File Transfer Protocol) is one of the earliest network applications.
+It is designed to efficiently transfer files between network hosts.
+Windows includes an FTP server, although it is not enabled by default.
+</p>
+<ol><li>
+    Start your Windows VM, and login.
+</li><li>
+    <img class="floatright" src="/VM-LAN/ftpserver-1.png" width="300px" alt="Windows FTP" />
+    Select the Start Button &rarr; Control Panel &rarr; Programs &rarr; Programs and Features, and select "Turn Windows features on or off".
+</li><li>
+    In the dialog window, click on the <span class="boxed">+</span> next to "Internet Information Services" to expand the choices.
+    See the screen capture on the right.
+    <ol><li>
+    Expand the "FTP Server" choice, and select "FTP Service".
+    </li><li>
+    Expand the "Web Management Tools" choice, and select "IIS Management Console".
+    </li><li>
+    Click on <span class="boxed">OK</span>.
+    </li><li>
+    Restart the computer.
+    </li></ol>
+</li><li class="clearboth">
+    <img class="floatright" src="/VM-LAN/ftpserver-2a.png" width="400px" alt="add ftp site" />
+    After logging back into Windows, Click the Start Button and enter "iis" in the search box at the bottom.
+    You should see "Internet Information Services (IIS) Manager" offered as a program;
+    click on this to start it.
+</li><li>
+    Right-click on the machine listed under "Connections" in the left pane.
+    (This machine may be named "VIRT-PC".)
+    <p>
+    Choose "Add FTP Site..."
+    </p>
+    <ol><li>
+        Enter "FTP-<strong class="em fancyfont">x</strong>" as the FTP site name.
+        Replace the value <strong class="em">"x"</strong> with your system number.
+    </li><li>
+        Click on the <span class="boxed">...</span> next to the Physical path box.
+        Browse to Local Disk (C:) &rarr; inetpub &rarr; ftproot, then click on <span class="boxed">OK</span>.
+        <p>
+        Click on <span class="boxed">Next</span>.
+        </p>
+    </li><li>
+        In the next dialog box, select "All Unassigned" for "IP Address".
+        <br/>
+        Also select "No SSL".
+        <p>
+        Click on <span class="boxed">Next</span>.
+        </p>
+    </li><li>
+        In the next dialog box, select "Anonymous" and "Basic".
+        <br/>
+        Then set "Allow access to:" to "Anonymous users";
+        <br/>
+        set "Permissions" to "Read" and "Write".
+        <p>
+        Click on <span class="boxed">Finish</span>.
+        </p>
+    </li></ol>
+
+</li><li>
+    <img class="floatright" src="/VM-LAN/ftpserver-2.png" width="400px" alt="FTP permissions 1" />
+    In the lefthand pane of the IIS Manager, under Connections, click on the "FTP-<strong class="em">"x"</strong>" line under "Sites".
+    See the screen capture at right.
+    <ol><li>
+        In the righthand pane of the IIS Manager, under Actions, click on the "Edit Permissions..." line.
+        This should open the "ftproot Properties" window.
+    </li><li>
+        On the General tab, uncheck the "Read-only" attribute.
+        <br style="clear:none" />
+        You may need to click it more than once to fully uncheck it.
+    </li><li class="clearboth">
+        Click on the Security tab.
+        See below.
+    </li><li>
+        Under "Group or user names:", scroll down to find the Users line, then click on it to select it.
+        <p>
+        Click the "<span class="boxed">Edit</span>" button.
+        This will open the "Permissions for ftproot" window.
+        </p>
+    </li><li>
+        Under "Group or user names:", select the Users line again.
+    </li><li>
+        Under "Permissions for Users", check the boxes to allow "Modify" and "Write".
+        (Scroll down as needed.)
+        <p>
+        Click on <span class="boxed">OK</span>.
+        </p>
+    </li><li>
+        Click on <span class="boxed">OK</span> in the "ftproot Properties" window.
+    </li></ol>
+
+    <img class="" src="/VM-LAN/ftpserver-3.png" alt="FTP permissions 2" />
+    <img class="" src="/VM-LAN/ftpserver-4.png" alt="FTP permissions 3" />
+    <p>&nbsp;</p>
+
+</li><li>
+    Close the IIS Manager window.
+</li><li>
+    Select the Start Button &rarr; Control Panel &rarr; System and Security &rarr; Windows Firewall.
+    <ol><li>
+        Select "Advanced Settings" on the left.
+    </li><li>
+        Select "Inbound Rules" on the upper left.
+    </li><li>
+        Scroll down to find "FTP Server (In)".
+    </li><li>
+        Click (or right-click) on "FTP Server (In)".
+    </li><li>
+        Choose "Enable rule" on the right (or in the right-click menu).
+    </li><li>
+        Close the "Windows Firewall" window and the Control Panel.
+    </li></ol>
+    <br/>
+
+</li><li>
+<img class="floatright width550" src="/VM-LAN/ftp-windows.png" alt="Windows FTP session" />
+    Check your FTP server by opening a command prompt.
+    Run the command:
+<pre class="prompt boxed width200">
+ftp 127.0.0.1
+</pre>
+    The server should prompt you for a User name, then a password:
+    enter the username "<strong>anonymous</strong>" and password "<strong>virt</strong>" (actually, any password is accepted but courtesy say to provide your email address).
+    <p>
+    Enter the command <code>bye</code> to terminate the ftp session.
+    </p>
+</li></ol>
+
+<hr/>
+
+<h4>
+Congratulations!  You've set up your FTP server.
+</h4>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

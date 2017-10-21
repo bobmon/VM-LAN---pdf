@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scapy 2 Assignment</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2016-12-28"/>
+<base href="https://montcs.bloomu.edu" />
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.25in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol { margin-top:1ex; }
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;border:1px dotted #666;
+    font-size:105%;
+    font-weight:normal;
+}
+div.code {page-break-inside:avoid;}
+
+pre {background:#e0e0e0}
+
+ul.python {
+    margin-left:3em;
+    margin-top:0.5ex;
+    list-style:outside '>>> ';
+}
+ul.code li,
+ul.python li {
+    border:none;
+    padding-top:0.2ex;
+    padding-bottom:0.0ex;
+    margin-bottom:0.5ex;
+}
+
+ul.compact {
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.fancyfont {
+    color:#090;
+}
+
+.red {color:#f00;}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+<script type="text/javascript" src="/js/numQs.js"></script>
+</head>
+<body onload="numberItems('Question&nbsp;', 'inum');">
+<div id="title">
+<p class="asn">Network assignment:<br/>Scapy and Wireshark</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<div class="smaller">
+<h3>assignment format</h3>
+<p>
+This assignment contains labeled, numbered questions that  need written answers.
+Other questions are for you to think about, but don't need a written
+answer.
+</p>
+<p>
+Write the answers in a text file or word-processor document, then upload the file through
+the "Submit" link on the course webpage.
+You may also write out the answers by hand if necessary.
+</p>
+<p>
+ Format the answer file like this:
+</p>
+<div class="code inset smaller width550"><pre>
+    YOUR NAME
+    Assignment name/number
+    Date
+
+    1.  Answer to first question.
+        <em style="font-size:80%;color:#600">(Example:  "I installed the Windows version in a virtual
+        machine running DOS 3.21.  I started it using the DOS
+        command RUN WIRESHARK IN WINDOWS.  This doesn't work.")</em>
+
+    2.  Answer to second question.
+        <em style="font-size:80%;color:#600">(Example:  "My network interface is called Billy.")</em>
+
+    3.  Answer to third question.
+
+    ...  and so forth.
+</pre></div>
+</div>
+
+<h1>Scapy and Layer 3/Layer 4</h1>
+
+<p>
+In this assignment you will use scapy to create and use IP and UDP packets.
+</p><p>
+You need to do this assignment on your virtual network.
+(If you have set up a virtual network on your personal computer, you can do it there.)
+<span class="HIDE">
+You also need to have set up the FTP service on your Windows VM (servers worksheet).
+</span>
+The UDP part has to be done on campus.
+</p>
+
+<h3>preliminary</h3>
+Use the "zenmap/nmap" software to find a vulnerability in your Windows VM:
+<ol><li>
+    From your Linux VM's terminal, run the command <code>sudo zenmap</code>.
+    Zenmap will open up a window that is an interface to "nmap".
+</li><li>
+    In the box labeled "Command:" (upper left), enter the line <tt>nmap&nbsp;&nbsp;-sS&nbsp;&nbsp;-r&nbsp;&nbsp;-p&nbsp;1-8000</tt>.
+</li><li>
+    In the box labeled "Target:" (just above the "Command:" box), enter your Windows VM's IP address.
+    (Notice that it appears in the "Command:" box as well.)
+</li><li>
+    Click on "Scan".
+    This scan should take about two&ndash;four minutes.
+</li><li>
+    In the lower right pane, you should see a list of ports that are open and listening on your Windows VM.
+    If you have done the server-installation exercise there should be at least one, port 21 (FTP control port).
+    There may be others, perhaps port 5357.
+</li><li>
+    Close the zenmap window.
+    You don't need to save any changes.
+</li></ol>
+
+<div id="SYN" class="">
+<h2>Playing with IP packets</h2>
+<ol><li>
+    Start scapy in a terminal on your Linux VM: <code>sudo scapy</code>.
+</li><li>
+    Look at scapy's defaults for an IP header, and create an IP packet that targets your Windows VM.
+    Replace '<span class="fake">Windows-IP</span>' with your Windows VM's IP address.
+    <ul class="python code"><li>
+        IP().show()
+    </li><li>
+        winip = '<span class="fake">Windows-IP</span>'
+    </li><li>
+        iphdrs = IP(dst=winip)
+    </li><li>
+        iphdrs.show()
+    </li></ul>
+    <p class="inum">
+    What are the default source IP and destination IP addresses for the IP() header fields?
+    </p><p class="inum">
+    What are the source IP and destination IP addresses for the iphdrs headers?
+    </p>
+
+</li><li>
+    Scapy provides higher-level commands than the Layer-2 "sendp()", "srp()", and "srp1()" for sending frames &mdash; the "send()" command automatically adds a suitable Ethernet header to a Layer-3 packet, and sends out the resulting frame; the "sr()" command adds an Ethernet header, sends out the packet, and collects the (expected) response packets.  "sr1()" is like "sr()", but only collects the first response packet.
+    <p>
+    From a Linux VM terminal, start Wireshark: <code>sudo wireshark</code>.
+    <span class="HIDE">
+    Add a display filter: 
+    <div class="code width300">
+        ip.addr=<span class="fake">Windows-IP</span>
+    </div>
+    </span>
+    Then do the following in scapy:
+    <ul class="python code"><li>
+        send(iphdrs)
+    </li></ul>
+    Not much happens; the IP packet only exists to carry a payload.
+    The ARP frames that precede it, identifying the matching MAC address, are actually more interesting.
+    <br/>
+
+</li><li>
+    TCP sessions must begin with a 3-way handshake that connects to a desired server port.
+    This handshake uses a TCP "SYN packet", a packet containing a TCP header with the server port as the destination, and only the SYN flag set.
+    Create one with these commands:
+    <ul class="python code"><li>
+        TCP().show()
+    </li><li class="HIDE">
+        ftpc = 21        <span class="smaller fancyfont"># FTP control port</span>
+    </li><li>
+        http = 80
+    </li><li>
+        httpsyn = TCP(dport=http)
+    </li><li>
+        iphdrs.show()
+    </li></ul>
+</li><li>
+    Send the SYN packet, and collect the response:
+    <ul class="python code"><li>
+        response = sr1( iphdrs/httpsyn )
+    </li><li>
+        response.show()
+    </li></ul>
+</li><li>
+    Isolate the TCP header (and any payload) from the response:
+    <ul class="python code"><li>
+        tcpr = response.getlayer()
+    </li><li>
+        tcpr.remove_payload()
+    </li><li>
+        tcpr.show()
+    </li><li>
+        '{:08b}'.format(tcpr.flags)
+    </li></ul>
+    <p class="inum">
+    What is the binary value of the TCP flags field, and what flags are set?
+    </p><p class="inum">
+    What should scapy send back, to complete a 3-way handshake?
+    </p>
+</li></ol>
+</div><!-- SYN -->
+
+<div id="UDP" class="">
+<h2>A Layer-4 UDP datagram and its response</h2>
+Now you'll create a junk payload, carried by a UDP datagram, and collect a reply to it.
+<ol><li>
+    Create a UDP datagram whose source is a random port, destination is the QOTD port, and with some junk for a payload, then inspect it:
+    <ul class="python code"><li>
+        junkport = 43210
+    </li><li>
+        qotd = 17
+    </li><li>
+        udp = UDP(sport=junkport, dport=qotd)
+    </li><li>
+        len(udp)
+    </li><li>
+        udp.add_payload(b'junk')
+    </li><li>
+        udp.show2()
+    </li></ul>
+    <p class="inum">
+    How many bytes long is the complete UDP header?
+    </p><p class="inum">
+    List all the UDP fields and their values.
+    </p>
+</li><li>
+    Set up an IP header that targets the "montcs" server.
+    Then send out the UDP datagram, and collect a response:
+    <ul class="python code"><li>
+        svr = '148.137.59.244'
+    </li><li>
+        ip = IP(dst=svr)
+    </li><li>
+        response = sr1( ip/udp )
+    </li><li>
+        response.show()
+    </li><li>
+        udpr = response.getlayer(UDP)
+    </li><li>
+        udpr.remove_payload()
+    </li><li>
+        udpr.show()
+    </li><li>
+        payload = response.getlayer(Raw)
+    </li><li>
+        payload.show()
+    </li></ul>
+    <p class="inum">
+    How do the UDP header fields in the response differ from those in your original UDP datagram?
+    </p><p class="inum">
+    If you run the "sr1()" command a number of times, is the returned payload always the same?
+    </p>
+
+</li><li>
+    Look at the response graphically:
+    <ul class="python code"><li>
+        response.pdfdump('response.pdf')    <span class="smaller fancyfont"># create .pdf file
+    </li></ul>
+    From a terminal, issue the commands:
+<pre class="code">
+evince response.pdf
+</pre>
+
+</li></ol>
+
+</div><!-- UDP -->
+
+<div id="traceroute" class="">
+<h2>Traceroute: finding routes to destinations</h2>
+The traceroute function can be performed using different protocols, in order to get responses from different routers with different firewall rules.
+Although scapy has traceroute functionality built in, you can also "roll your own":
+<ol><li>
+    Perform a traceroute based on the ICMP ("ping") protocol.
+    In the following steps, <strong>indent the lines as shown!</strong>
+    <ul class="python code"><li>
+        import time
+    </li><li>
+        resp = []
+    </li><li>
+        for t in range(1,25):
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;ip = IP(dst='8.8.8.8', ttl=t, id=RandShort())
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;ts = time.time()
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;r = sr1( ip/ICMP() )
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;te = time.time()
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;resp.append((t,r, (te-ts)*1000))
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;if r.src == '8.8.8.8':
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break
+    </li><li>
+    </li><li>
+        print( len(resp), 'responses' )
+    </li></ul>
+    <p class="inum">
+    How many responses did you receive?
+    </p>
+    This is the number of intermediate routers, or "hops", between you and the '8.8.8.8' destination.
+
+</li><li>
+    Display the route that you discovered.
+    Again, pay attention to the indentation of the lines:
+    <ul class="python code"><li>
+        for l in resp:
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;print('{:2}  {:16s}  {:7.3f}'.format(l[0], l[1].src, l[2]))
+    </li></ul>
+    <p class="inum">
+    Which hop took the least amount of time?  How much?
+    Which hop took the most?  How much?
+    </p>
+    Does the progression of times seem reasonable?
+
+</li><li>
+    Perform scapy traceroutes:
+    <ul class="python code"><li>
+        resp, unanswered = traceroute('8.8.8.8')
+    </li><li>
+        resp.graph()
+    </li></ul>
+    The <tt>.graph()</tt> method accepts an optional argument to write out a file in .pdf, .gif, or .svg formats.
+    The Linux VM includes the "mtpaint" program which can open the .gif format file.
+    <ul class="python code"><li>
+        resp, unanswered = traceroute('cern.ch')
+    </li><li>
+        resp.graph()
+    </li></ul>
+    How do the two traceroute paths compare?
+
+</li></ol>
+
+</div><!-- traceroute -->
+
+<div id="SYNflood" class="HIDE">
+<h2>A Denial-Of-Service (DOS) attack</h2>
+One way to perform a DOS attack is to send a large number of packets to a victim that initiate TCP connections but never complete them.
+The victim devotes system resources to each initiated connection, until it runs out of resources and perhaps crashes.
+This is called a "SYN flood" because the packets that initiate a TCP connection are packets with their SYN bit set.
+This works best if many machines (a botnet) can be commanded to all send SYN packets to the victim at the same time.
+For good measure, the source address is spoofed (to protect the guilty).
+<p>
+For this to work, the victim must be prepared to accept TCP connections on one (or more) of its server ports.
+Defenses against this include blocking all unused ports with a firewall, limiting the number of connections that the computer will accept at one time, and limiting the amount of time that the computer will reserve resources for the initiated connection.
+</p>
+<p>
+For this exercise assume that the Windows VM is listening on port 21.
+The "zenmap" program that you used earlier showed you a list of listening ports; any of those is acceptable as well. 
+</p>
+<ol><li>
+    Enter these commands to build an attack frame:
+    <ul class="python code"><li>
+        goat = '192.168.<span class="fancyfont red">x</span>.62'  <span class="smaller fancyfont"># who to blame</span>
+    </li><li>
+        victim = '<span class="fake">Windows-IP</span>'  <span class="smaller fancyfont"># specify victim's IP for dst</span>
+    </li><li>
+        tcp = TCP()
+    </li><li>
+        tcp.show()      <span class="smaller fancyfont"># flags should be set to S</span>
+    </li><li>
+        ip = IP(src=goat, dst=victim)
+    </li><li>
+        eth = Ether()      <span class="smaller fancyfont"># nothing special here</span>
+    </li><li>
+        padstr = '\x00' * (60 - len(tcp) - len(ip) - len(eth))
+    </li><li>
+        pad&nbsp;=&nbsp;Padding(load=padstr)
+    </li><li>
+        synframe = eth/ip/tcp/pad
+    </li><li>
+        len(synframe)
+    </li><li>
+        synframe.show()
+    </li></ul>
+</li><li>
+    Use the scapy command "srpflood()" to send out a continual stream of packets, as fast as possible.
+    <ul class="python code"><li>
+        srpflood(synframe)
+    </li></ul>
+
+</li><li>
+    Put this display filter into Wireshark, and look at the packets:
+    <div class="code width450">
+        ip.addr=<span class="fake">Windows-IP</span> &amp;&amp; tcp.flags.syn==1
+    </div>
+    You should see a constant flow of connection requests (SYN packets), along with connection accepts from the victim (SYN-ACK packets).
+    </p><p class="inum">
+    Do there seem to be as many connection accepts as there are requests?
+    </p>
+
+</li><li>
+    Put this display filter into Wireshark, and look at the packets:
+    <div class="code width300">
+        tcp.flags.reset
+    </div>
+    You should see some connections being reset (RST packets).
+    </p><p class="inum">
+    What is the source (Src) IP address of the reset packets?
+    What is the destination (Dst) IP address?
+    Which client (Linux or Windows) is resetting the connections?
+    </p>
+</li></ol>
+</div><!-- SYNflood -->
+
+<h3>shut down</h3>
+<p>
+Close down scapy by entering the <code>exit()</code> command.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

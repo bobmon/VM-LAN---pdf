@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Wireshark TCPFTP assignment</title>
+<meta name="description" content="course assignment" />
+<meta name="author" content="RAMontante" />
+<base href="https://montcs.bloomu.edu"/>
+<style type="text/css">
+/*<![CDATA[*/
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+@import url("/css/assignment.css");
+
+body {
+    width:8.5in;padding:0.5in;
+    border: 1px dotted #333;
+    background:#fff;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+pre {background:#e0e0e0}
+
+table#downloads {
+    border-collapse:collapse;
+    border:1px solid #999;
+    width:20em;
+    margin:0.5em;
+    float:right;
+}
+table#downloads tr {
+    border: 1px dotted #666;
+}
+table#downloads th {
+    background:#f7f7f7;
+    padding:4px;
+}
+table#downloads td {
+    padding:4px;
+}
+
+div#labquestions {
+    background:#fcfcfc;
+    font-size:smaller;
+}
+
+.inset {
+    /*width-left:4em;*/
+    width: 6in;
+    border-left: 3px solid #d0d0d0;border-top: 3px solid #c7c7c7;
+    border-right: 3px solid #f0f0f0;border-bottom: 3px solid #f0f0e0;
+    background: #e7e7e0;
+}
+/*]]>*/
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+<script type="text/javascript" src="/js/numQs.js"></script>
+</head>
+<body onload="numberItems('Question&nbsp;', 'inum');">
+<div id="title">
+<p class="asn">Network assignment:<br/>Wireshark TCP-FTP Lab</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<div class="assignment clearboth">
+<p>
+This assignment looks at the use of the TCP protocol in file transfers.
+You will first copy a large text file to your physical host, then use FTP to transfer it to your Windows VM while watching the transfer in wireshark.
+If you haven't already enabled the Windows FTP Server, follow the steps in <a href="/VM-LAN/worksheet.LAN10.ftp-server.html">worksheet.LAN10.ftp-server.html</a> to set it up.
+</p>
+
+<div class="smaller">
+<h3>assignment format</h3>
+<p>
+This assignment contains labeled, numbered questions that need written answers.
+Other questions are for you to think about, but don't need a written
+answer.
+</p>
+<p>
+Write the answers in a text file or word-processor document, then upload the file through
+the "Submit" link on the ocurse webpage.
+You may also write out the answers by hand if necessary.
+</p>
+<p>
+ Format the answer file like this:
+</p>
+<div class="code inset smaller"><pre>
+    YOUR NAME
+    Assignment name/number
+    Date
+
+    1.  Answer to first question.
+        <em style="font-size:80%;color:#600">(Example:  "I installed the Windows version in a virtual
+        machine running DOS 3.21.  I started it using the DOS
+        command RUN WIRESHARK IN WINDOWS.  This doesn't work.")</em>
+
+    2.  Answer to second question.
+        <em style="font-size:80%;color:#600">(Example:  "My network interface is called Billy.")</em>
+
+    3.  Answer to third question.
+
+    ...  and so forth.
+</pre></div>
+</div>
+
+<h3>TCP in a simple FTP session</h3>
+You will start with a short FTP session.
+FTP is carried in the TCP protocol, so the FTP session involves creating the TCP channel, using it, and then closing it down at the end.
+All this is visible in wireshark.
+<ol><li>
+    Start up both your Linux VM and your Windows VM.
+    The FTP server should start with Windows.
+</li><li>
+    In your Linux VM, start wireshark and begin a packet capture.
+    Enter the display filter <code class="boxed">tcp&nbsp;&amp;&amp;&nbsp;ip.addr==192.168.<span class="red fancyfont">x.a</span></code> &mdash; replace "192.168.<span class="red fancyfont">x.a</span>" with your Windows VM's IP address.
+</li><li>
+    <a href="/VM-LAN/ftp-1.png"><img src="/VM-LAN/ftp-1.png" class="floatright" width="60%" alt="FTP session"/></a>
+    From a terminal, enter the command:
+<pre class="prompt2 boxed width225">
+ftp 192.168.<span class="red fancyfont">x.a</span>
+</pre>
+    Replace "192.168.<span class="red fancyfont">x.a</span>" with your Windows VM's IP address.
+    <p>
+    At the prompts, enter the user name "anonymous" (without the quotes), and password "joe".
+    (Actually, any password will be accepted; use something else if you wish.)
+    </p>
+    <p>
+    After you get the "ftp&gt;" prompt, just enter the command "bye".
+    </p>
+</li><li>
+    Stop the packet capture.
+</li><li>
+    Look at the wireshark window.
+    You should see about 20 packets displayed, some identified as protocol TCP (these aren't carrying any application-layer payload) and some identified as protocol FTP (the application payload's protocol).
+    <p>
+    Look at the first three packets.
+    Their info fields should describe them as "[SYN]", "[SYN,ACK]", and "[ACK]".
+    This is the TCP "three-way handshake".
+    Select the first one ("[SYN]"), and expand the Transmission Control Protocol line in wireshark's middle pane.
+    </p>
+    <p class="inum">
+        What are the source IP address and source TCP port number used by your client machine (the source)?
+    </p>
+    <p class="inum">
+        What are the IP address and TCP port number used by the FTP server (the destination)?
+    </p>
+    <p class="inum">
+        What is the value of the TCP Flags field?
+    </p>
+    <p class="inum">
+        What is this value in binary notation?
+    </p>
+    <p class="inum">
+        What flag(s) does wireshark identify as set?
+    </p>
+</li><li>
+    Select the second packet, the "[SYN,ACK]" one.
+    <p class="inum">
+        What is the value of the TCP Flags field?
+    </p>
+    <p class="inum">
+        What is this value in binary notation?
+    </p>
+    <p class="inum">
+        What flag(s) does wireshark identify as set?
+    </p>
+    <p class="inum">
+        What are the (relative) Sequence and Acknowledgement numbers?
+    </p>
+    <br/>
+</li><li>
+    Find the packet that includes the info "Request: USER anonymous".
+    Examine the packet in wireshark's middle window pane; expand the "Transmission Control Protocol" information.
+    Use the information you see in the middle pane to answer these questions:
+    <p class="inum">
+        What is the TCP segment length?
+    </p>
+    <p class="inum">
+        What are the (relative) Sequence and Acknowledgement numbers?
+    </p>
+    <br/>
+</li><li>
+    Examine the next packet, the one including the info "Response: 331 ...".
+    <p class="inum">
+        What are the (relative) Sequence and Acknowledgement numbers?
+    </p>
+    <p>
+        How are the Sequence and Acknowledgement numbers of the "Request: USER anonymous" packet related to the numbers of this one?
+    </p>
+</li><li>
+    Look at the packet that includes the info "Request: PASS ..." ("..." is whatever password you supplied, perhaps "virt").
+    Examine the packet in wireshark's middle window pane; expand the "File Transfer Protocol (FTP)" information.
+    The entire request consists of the keyword "PASS" and the password, in plaintext.
+    Would you say the ftp is a very secure protocol?
+    <p>&nbsp;</p>
+</li><li>
+    Examine the last four packets.
+    <p class="inum">
+        What TCP flags appear in these packets?
+    </p>
+    <p>
+        What do these packets do?
+    </p>
+    <p>&nbsp;</p>
+</li></ol>
+
+<h3>TCP and a large file transfer</h3>
+Now you will transfer a large file using FTP.
+The original TCP session is a control channel; when transferring files FTP opens a second TCP session for a data channel.
+The next wireshark capture will examine this.
+
+<ol><li>
+    Restart the wireshark packet capture on your Linux VM.
+
+</li><li>
+    <img class="floatright" width="60%" src="/VM-LAN/ftp-2.png" alt="FTP session 2"/>
+    Repeat the terminal command:
+<pre class="prompt2 boxed width225">
+ftp 192.168.<span class="red fancyfont">x.a</span>
+</pre>
+    Replace "192.168.<span class="red fancyfont">x.a</span>" with your Windows VM's IP address.
+    <p>
+    At the prompts, enter the user name "anonymous" (without the quotes), and any password.
+    </p>
+</li><li class="">
+    Enter the following commands to transfer the "/etc/services" file to the FTP server, inspect the result, and then quit:
+<pre class="prompt2 boxed width225">
+lcd /etc
+</pre>
+<pre class="prompt2 boxed width225">
+put services
+</pre>
+<pre class="prompt2 boxed width225">
+ls
+</pre>
+<pre class="prompt2 boxed width225">
+bye
+</pre>
+    How many bytes does ftp report as being sent?
+
+</li><li class="">
+    Stop the wireshark packet capture again.
+    <br/>
+    Use the information in the new packets to answer these questions:
+    <p class="inum">
+    Find the packet containing "Request: PORT ...".
+    Then find the three-way handshake that follows this packet.
+    Which host (client or server) initiates the new three-way handshake by sending a SYN packet?
+    Does that mean this is an "active mode" or a "passive mode" connection?
+    </p>
+    <p class="inum">
+    In the "[SYN]" packet, what is the source port number?
+    </p>
+    <p class="inum">
+    Look at the packet containing "Request: PORT ..." again.
+    What are the source and destination TCP ports in this packet?
+    <br/>
+    Which host (client or server) is the source?
+    </p>
+    <p class="inum">
+    Expand the FTP information in wireshark's middle pane.
+    What are the values for the active IP address and port?
+    </p>
+    <p>&nbsp;</p>
+
+</li><li>
+    Enter a modified display filter: <code class="boxed">tcp &amp;&amp; ip.addr==192.168.<span class="red fancyfont">x.a</span> &amp;&amp; tcp.port==20</code> --- replace "ip.addr==192.168.<span class="red fancyfont">x.a</span>" with your Windows VM's IP address.
+    This will limit the display to those packets that are part of the data channel.
+    The status bar at the bottom of the wireshark window should show how many packets are displayed, as well as how many were captured.
+    You may need to make the window larger in order to see the numbers.
+    <p class="inum">
+    How many data packets are there?
+    </p>
+    <p class="inum">
+    What is the length of most of the data packets, and how much FTP Data do those packets carry?
+    </p>
+
+</li><li>
+    Select any one of the FTP-DATA packets (except the last one).
+    <p class="inum">
+    What are the TCP Segment Length, Sequence number, and Acknowledgement number in the Transmission Control Protocol information?
+    </p>
+
+</li><li>
+    Select the next FTP-DATA packet.
+    <p class="inum">
+    What are the TCP Segment Length, Sequence number, and Acknowledgement number in this packet's Transmission Control Protocol information?
+    </p>
+    <p class="inum">
+    How does the length of the TCP Segment, in the first packet you looked at, compare to the difference between the two packets' Sequence numbers?
+    Why is this?
+    </p>
+    <p>
+    Why do you think the Acknowledgement number doesn't change?
+    </p>
+    <p>&nbsp;</p>
+
+</li></ol>
+
+</div><!-- assignment -->
+
+<script type="text/javascript">ts_validate();</script>
+</body></html>

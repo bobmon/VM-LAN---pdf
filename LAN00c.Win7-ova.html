@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Networking Worksheet</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-25"/>
+<base href="https://montcs.bloomu.edu"/>
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol { margin-top:1ex;list-style-type:decimal;}
+ol ol { margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0ex; margin-bottom:3ex; padding-top:4px; border-top:1px dotted #999;}
+ul li {margin-top:0.5ex;margin-bottom:1.5ex; padding-top:4px;}
+
+ol.compact li {margin-bottom:1.0ex;width:90%;}
+
+img {
+    margin:0;
+    padding:0;
+    border:1px solid #000;
+}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    font-family: monospace;
+    font-size:100%;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+.code, code,
+pre {background:#e0e0e0}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+.fancyfont {
+    color:#a33;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+
+</head><body class="">
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>VM-setup Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<h1>Setting up Virtual Machines &mdash; Windows 7 client</h1>
+
+<img class="floatright width300" src="/VM-LAN/VM-network.0d.svg" alt="two VMs" />
+
+In this worksheet you will set up a Virtual Machine running Windows 7.
+This machine will have a simple user account called "virt", and with password "virt" so that nobody forgets their account or password.
+<p>
+To speed up the installation, a partially-installed Virtual Machine (VM) has been created.
+You will <em>import</em> an <em>appliance</em> that contains the partially installed Windows VM &mdash; the install files have been copied from the original .ISO image, and the VM restarted, ready to be configured.
+</p>
+
+<p>
+Some terminology:
+</p>
+<ol class=""><li>
+    The actual computer that you're using is called the <em>physical host</em>.
+</li><li>
+    It will run a program called a <em>virtual machine manager (VM manager)</em>; we will be using the VirtualBox VM manager.
+    The VM manager manages network connections at Layer 2, and can provide a gateway to the Internet.
+</li><li>
+    Within it, you will configure and run some <em>virtual machines</em> or <em>VMs</em>, each one running an operating system (such as Windows 7 or Linux).
+</li><li>
+    Your first VMs are <em>clients</em>; later on you will add two router VMs as well.
+</li><li>
+    Your physical host has an IP address that looks like: <strong>148.137.141.<span class="fancyfont">host#</span></strong>; the value <strong class="fancyfont">host#</strong> is your virtual network's <em>system number</em>, and will be used repeatedly to identify your VMs.
+    Your system number should be a value somewhere between 80 and 126.
+</li></ol>
+
+<!-- ............................................................. -->
+
+<hr/>
+<h2>Set up and Start the VirtualBox VM Manager</h2>
+If you haven't already done this, do it now:
+<ol><li>
+    First open a terminal on your physical host.
+</li><li>
+    Run the <code class="boxed">ifconfig</code> command.
+    Note your IP (inet) address <span class="HIDE">and MAC (HWaddr or ether) address</span> for later reference.
+    It should look like <tt>148.137.141.</tt><strong class="fancyfont">host#</strong> where the "<strong class="fancyfont">host#</strong>" varies from host to host.
+    <em>Remember</em> the number <strong class="fancyfont">host#</strong> &mdash; this is your network's system number, and you will use it repeatedly in configuring your network.
+    <div class="HIDE width400 height200 boxed"> </div>
+
+</li><li class="">
+    <p>
+    If you haven't already, use the <code class="boxed">mountmadhome</code> command to mount your "M:" drive as the "MadHome" directory in your home directory.
+    You will need about 20GB free on your "MadHome" drive.
+    </p>
+
+</li><li>
+    Run the command <code class="boxed">virtualbox</code> from the command line, or find the link from the start menu.
+
+</li><li>
+    In the Oracle VM Virtualbox Manager window, click on:
+    <strong>File &rarr; Preferences &rarr; General</strong>
+
+</li><li class="">
+    Set the Default Machine Folder to be a folder in MadHome.
+    You should create a folder to hold VMs (and other files) for this course.
+
+</li><li class="">
+    Click on
+    <strong>File &rarr; Preferences &rarr; Network</strong>
+    </p>
+</li><li>
+    In the "<u>N</u>AT Networks" tab, click the "Plus" icon on the right.
+    <p>
+    You should see a new named network, perhaps "NatNetwork".
+    Whatever the name is, remember it.
+    </p>
+
+</li><li>
+    Click on "OK".
+</li></ol>
+
+<hr/>
+<h2>Windows VM</h2>
+<h3>Install Windows</h3>
+<ol><li>
+    Click on the "File" menu in the VM manager window.
+    Choose "Import Appliance..."
+
+</li><li>
+    If you can access the MadData drive, do this:
+    <ol><li>
+        In the "Import Virtual Appliance" dialog, click the folder icon on the right.
+    </li><li>
+        Browse to "<strong>MadData/DIGFOR275-All/VM-LAN</strong>" in your home directory.
+    </li><li>
+        Double-click (or Open) the "Win_Pro_7_64bit.partial-install.ova" file.
+    </li></ol>
+    Alternatively, download and use the file from here:
+    <ol><li>
+        Browse to "<a href="https://montcs.bloomu.edu/Networking/Software/VM-LAN/Win_Pro_7_64bit.partial-install.ova">montcs.bloomu.edu/Networking/Software/VM-LAN/Win_Pro_7_64bit.partial-install.ova file.</a>
+    </li><li>
+        Save the file somewhere on your computer.
+    </li><li>
+        In the "Import Virtual Appliance" dialog, click the folder icon on the right.
+    </li><li>
+        Browse to wherever you saved the "Win_Pro_7_64bit.partial-install.ova" file, and double-click (or Open) it.
+    </li></ol>
+    <p>
+    <p>
+    Click the "Next &gt;" button.
+    </p>
+
+</li><li>
+    On the next screen, double-click the name "Win7 partial install", and change it to read "Win7-<strong class="fancyfont">host#</strong>" (where <strong class="fancyfont">host#</strong> is your system number).
+    Also enable the check box next to "Reinitialize the MAC address of all network cards".
+    <p>
+    Click the "Import" button.
+    This should take about 5 minutes to finish.
+    </p>
+
+</li><li>
+    Select your new Windows VM, and click on <strong>Settings</strong>.
+    <ol class=""><li>
+        Click on <strong>Network</strong> (on the left).
+    </li><li class="">
+        The Adapter 1 tab, near the middle, is currently attached to "NAT".
+        Change it to be attached to "NAT network".
+        <p>
+        Select the same name that was added to the "<u>N</u>AT Networks" earlier.
+        </p>
+    </li><li class="">
+        Click the word "Advanced" (near the middle of the Adapter 1 tab) to expand it.
+    </li><li class="">
+        Click the box next to "Promiscuous Mode" and choose "Allow All".
+    </li><li class="">
+        Verify that the "Cable Connected" box is checked.
+
+    </li><li>
+        Click <strong>OK</strong> in the lower right corner.
+    </li></ol>
+
+</li></ol>
+
+<h3>Configure Windows</h3>
+<ol><li>
+    Select your Windows VM, and click on the <strong>Start</strong> icon.
+    <ol class=""><li>
+        Press "<span class="fancyfont">&lt;<tt>Enter</tt>&gt;</span> to choose "Start Windows Normally".
+    </li><li>
+        Create a user named "virt" (the default machine name is acceptable).
+        Click the "<u>N</u>ext" button.
+    </li><li>
+        Enter and re-enter the password as "virt".
+        The easiest password hint is to simply enter "virt" again.
+        Click the "<u>N</u>ext" button.
+    </li><li>
+        Select "Ask me later" for the security settings.
+    </li><li>
+        Select "Eastern Time" for the time and date settings.
+    </li><li>
+        (<em>Important:</em>) Select "Work network" for the current location.
+    </li><li>
+        Cancel the "Activate now" dialog box, or choose "Ask me later".
+        <p>
+        If you later see a "...victim of counterfeiting..." dialog box, just dismiss it.
+        We are using an unactivated copy as a basic client.
+        </p>
+    </li></ol>
+
+</li><li>
+    Login to Windows if necessary, using account "virt" and password "virt".
+
+</li><li>
+    Click on "Start -&gt; All Programs -&gt; Accessories".
+    <ol class=""><li>
+        Right-click on "Command Prompt" and choose "Pin to Taskbar", or else drag the icon onto the desktop.
+        This will make it more convenient to start command prompts in the future.
+    </li><li>
+        Double-click on the command-prompt icon to start a command shell.
+    </li><li>
+        <img class="floatright width450" src="/VM-LAN/ipconfig.png" alt="ipconfig" />
+        In the shell, run the command <code class="boxed">ipconfig</code>.
+        <p>
+        Find your VM's IP address &mdash; it will be on a line labeled "IPv4 Address", and is a value similar to "10.0.2.7".
+        </p>
+    </li><li>
+        Run the command <code class="boxed">ping 4.2.2.2</code> to determine whether you're connected to the Internet.
+        (You should be.)
+    </li><li>
+        Run the command <code class="boxed">ping google.com</code> to determine whether your VM can resolve domain names.
+        (This should also work.)
+    </li></ol>
+
+</li><li>
+    Select "Start-Button -&gt; Control Panel -&gt; System and Security".
+    <ol class="compact"><li>
+        Choose "Windows Firewall" (on the right).
+    </li><li class="">
+        Choose "Allow a program or feature through Windows Firewall".
+    </li><li class="">
+        Click on "Change settings".
+    </li><li class="">
+         Check "File and Printer Sharing" on.
+    </li><li class="">
+         Click on "OK" at the bottom of the window.
+    </li></ol>
+    This should let inbound "pings" get through.
+    <p>
+    Click the red "X" in the upper right to close the Control Panel.
+    </p>
+
+</li></ol>
+
+<h4>Make your VM resize-able</h4>
+<ol><li>
+    Click on the "Devices" menu (above the Windows screen) again.
+    <p>
+    Choose "Insert Guest Additions CD image".
+    </p>
+</li><li>
+    Wait perhaps 10 seconds.
+    <ul class="compact"><li>
+        If you get the "AutoPlay" dialog box, then:
+        <ol class=""><li>
+            Click on "<span class="boxed">Run VBoxWindowsAdditions.exe</span>"
+    </li><li>
+        If the CD DOESN'T autostart, then...
+        <ol class=""><li>
+            Click the Windows Start button in the VM, and enter the command "computer".
+        </li><li>
+            Double-click the "CD drive (D:) VirtualBox Guest Additions" entry.
+        </li></ol>
+    </li></ul>
+    <ol class=""><li>
+        Click on "Yes" when asked if you want to allow changes.
+    </li><li>
+        In the welcome dialog, click on "Next &gt;".
+    </li><li>
+        Accept the default Destination Folder, and click on "Next &gt;" again.
+    </li><li>
+        Accept the default Components, and click on "Install".
+    </li><li>
+        When asked to trust Oracle software, click on "Install" again.
+    </li><li>
+        If asked to allow software to make changes, click on "Install" again.
+    </li><li>
+        Accept the choice to "Reboot now" and click on the "Finish" button.
+    </li></ol>
+
+</li><li>
+    While Windows is rebooting, click on the "Devices" menu (above the Windows screen).
+    <ol class=""><li>
+        Choose "Optical Drives".
+    </li><li>
+        Click on "Remove disk from virtual drive".
+    </li></ol>
+
+</li><li>
+    You should now be able to click-and-hold the corner of the window and drag it to resize it.
+    <p>
+    Alternatively, you can click on "Menu -&gt; Control Panel -&gt; Hardware and Sound -&gt; Display -&gt; Adjust resolution" to resize the window &mdash; try 1024x768 or 1280x1024.
+    </p>
+</li></ol>
+
+<hr/>
+<!-- ............................................................. -->
+
+<h2>Next steps</h2>
+<p>
+After installing the Linux VM as well, do the "client verification" worksheet.
+This will verify communication between your VMs.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

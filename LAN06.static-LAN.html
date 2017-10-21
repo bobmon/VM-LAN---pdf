@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Networking Worksheet</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-01-04"/>
+<base href="https://montcs.bloomu.edu"/>
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol {margin-top:1ex;line-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+br {clear:none;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;border:1px dotted #666;
+    font-weight:normal;font-size:105%;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+pre {background:#e0e0e0}
+
+ol.compact li {margin-bottom:1.0ex;width:90%;}
+
+ul.compact {
+    /* list-style: inside url(python-cursor.png); */
+    list-style: inside square;
+}
+
+img {
+    margin:0;
+    padding:0;
+    border:1px solid #000;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+
+</head><body class="" >
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>Private-LAN-setup Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<h1>Configure Your Own LAN Segment</h1>
+<img class="floatright" src="/VM-LAN/VM-network.1.svg" width="35%" alt="two VMs" />
+In this worksheet you will <em>temporarily</em> reconfigure your Virtual Machines to form a private Local Area Network, and give them <em>static</em> IP addresses.
+This will disconnect you from the Internet (for now).
+In the next lab you'll change the configuration again, to use <em>dynamic</em> (DHCP) IP addresses.
+
+<p>
+Throughout this worksheet, the value "<span class="fancyfont red">100</span>" is used as a "placeholder" that refers to your physical host's "system number" &mdash; that is, the last number of your computer's campus IP address, such as "148.137.141.<span class="fancyfont red">119</span>" (the instructor's machine).
+</p><p>
+Virtualbox initially created a "NAT Network" with IP addresses in the 10.0.2.0/24 subnet.
+Now you will reset your LAN hosts to use static addresses in the 192.168.<span class="fancyfont red">100</span>.0/24 IP subnet.
+Later you will reset your LAN
+</p><p>
+Your VMs are currently nodes on a LAN managed by the VirtualBox Manager.
+Now you'll move them to your own LAN segment, which will be named "intnet".
+Later on you'll add a router to manage your LAN, but for now the nodes will be configured to stand alone.
+</p>
+
+<h1>Change Network Adapters</h1>
+Do this for <em>both</em> your Windows VM and your Linux VM.
+
+<ol><li>
+    Select one of your VMs in the VM manager, and click on the "Settings" icon.
+</li><li>
+    Choose the "Network" item in the dialog box.
+</li><li>
+    You should see a tab labeled "Adapter 1" that is enabled, and attached to "NATNetwork".
+    <p>
+    Click on the drop-down box for this and select "Internal Network" instead.
+    The network's name should come up as "intnet".
+    </p>
+</li><li>
+    Click on "OK".
+</li><li>
+    Repeat these steps for your other VM.
+</li></ol>
+
+<h1>Set static IP addresses</h1>
+
+<h2>Windows VM &mdash; static</h2>
+<ol><li>
+    Click on "Start".
+    Login to Windows, using account "virt" and password "virt".
+</li><li>
+    Click on "Start -&gt; All Programs -&gt; Accessories".
+    <p>
+    Right-click on "Command line" and choose "Run as Administrator".
+    </p>
+</li><li>
+    In this Administrator command prompt, run the command <code>ipconfig</code>.
+    What IP address is shown?
+    IP addresses that start out this way are so-called APIPA addresses; Windows chooses one arbitrarily when it has no other way of getting an IP address.)
+    </p>
+
+    <img class="floatright" src="/VM-LAN/LAC-properties.png" width="183px" alt="Local Area Connection dialog" />
+
+    <p>
+    If you run the command <code>ping 4.2.2.2</code> now, you will get an "unreachable" result because you're not connected to the Internet.
+    </p>
+</li><li>
+    Select "Start-Button -&gt; Control Panel -&gt; Network and Internet".
+    <p>
+    Click on "View network status and tasks" under "Network and Sharing Center".
+    </p><p>
+    Click on "Change adapter settings" on the left.
+    </p>
+
+</li><li>
+    Right-click the Local Area Connection network.
+    Choose "Properties".
+
+</li><li>
+    Find and select the line "Internet Protocol Version 4 (TCP/IPv4)", as shown at right.
+    Then click on the Properties button.
+
+</li><li style="clear:both">
+    <img class="floatright" style="clear:right" src="/VM-LAN/Win7-static.png" width="208px" alt="Win7 static dialog" />
+    Fill in the blanks in the Properties dialog, as shown at right:
+    check the box "Use the following IP address:";
+    fill in the IP address, subnet mask, Default gateway, and preferred DNS server.
+    <p>
+    <strong>Replace the value "<span class="fancyfont red">100</span>" in each line of the figure with the last part of your physical host's IP address, e.g. 106, 119 or a similar number.</strong>
+    </p>
+    <ol><li>
+        The IP address is 192.168.<span class="fancyfont red">100</span>.50
+        (For example, the instructor's Windows VM will be at 192.168.<strong class="em">119</strong>.50).
+    </li><li>
+        Set the subnet mask to 255.255.255.0.
+    </li><li>
+        Set the Default gateway to 192.168.<span class="fancyfont red">100</span>.49.
+    </li><li>
+        Also set the Preferred DNS server to 192.168.<span class="fancyfont red">100</span>.49.
+    </li><li>
+        Leave the Alternate DNS server blank.
+    </li><li>
+        Click "Close".
+    </li><li>
+        Click "OK".
+    </li></ol>
+
+</li><li>
+    Back up to the "Network and Sharing Center" window again.
+    <ol><li>
+        Click on "<span style="color:blue">Choose homegroup and sharing options</span>".
+    </li><li>
+        Click on "<span style="color:blue">What is a network location?</span>".
+    </li><li>
+        Click on "Work network".
+    </li><li>
+        Click on "OK", then "Close".
+    </li></ol>
+
+</li><li style="clear:both">
+    <img class="floatright" src="/VM-LAN/Win-firewall.png" width="258px" alt="Linux static dialog" />
+    If necessary, back up to the "Network and Sharing Center" window again.
+    <ol class="compact"><li>
+        Check on "Windows Firewall", in the lower left corner.
+    </li><li class="">
+        Choose "Allow a program or feature through Windows Firewall" (left side).
+    </li><li class="">
+        Click on "Change settings".
+    </li><li class="">
+         Verify that "File and Printer Sharing" is checked on.
+    </li><li>
+        Click "OK".
+    </li></ol>
+    This will let inbound "pings" get through.
+</li></ol>
+
+<hr/>
+<h2>Linux VM &mdash; static</h2>
+In these steps, replace the value <span class="fancyfont">"x"</span> with the last part of your physical host's IP address.
+<ol><li>
+    Start your Ubuntu VM.
+    Login, using account "virt" and password "virt".
+</li><li>
+    Click on the Start button in the lower left corner.
+    <p>
+    Choose "Preferences", then choose "Network Connections".
+    </p>
+</li><li>
+    <img class="floatright" src="/VM-LAN/Linux-static.png" width="50%" alt="Linux static dialog" />
+    Choose the Ethernet connection.
+    It may be named "Wired connection 1", or "Manual wired connection".
+    <p>
+    Then click on "Edit".
+</li><li>
+    Choose the "IPv4 Settings" tab.
+</li><li>
+    Set the Method (at the top) to "Manual".
+</li><li>
+    In the following steps, again replace <span class="fancyfont red">100</span> with your own system number (e.g. <strong>119</strong> for the instructor's machine).
+    <ol><li>
+        Click on the "Add" button on the right.
+    </li><li>
+        Enter <code>192.168.<span class="fancyfont red">100</span>.51</code> under the Address label.
+    </li><li>
+        Enter <code>24</code> under the Netmask label.
+    </li><li>
+        Enter <code>192.168.<span class="fancyfont red">100</span>.49</code> under the Gateway label.
+    </li><li>
+        Enter <code>192.168.<span class="fancyfont red">100</span>.49</code> in the "DNS servers:" box.
+    </li></ol>
+</li><li>
+    Click on the "Save..." button, then the "Close" button in the Network Connections window.
+</li></ol>
+
+<hr/>
+<h1>Test your static LAN addresses</h1>
+<ol><li>
+    Restart both of your VMs.
+</li><li>
+    In Windows, run the command <code>ipconfig</code> from a command prompt and verify the VM's IP address.
+</li><li>
+    In Linux, run the command <code>ifconfig</code> (or the command <code>ip addr</code>) from a terminal and verify this VM's IP address.
+</li><li class="HIDE">
+    In Linux, start Wireshark.
+    Use <tt>icmp</tt> as a display filter; once you do the following ping commands you should see ICMP frames show up.
+</li><li>
+    Replace the value "<span class="fancyfont red">100</span>" in these steps with your system number.
+    <p>
+    In your Windows VM, open a command shell and run the command <code>ping  192.168.<span class="fancyfont red">100</span>.51</code> to ping your Linux VM.
+    </p>
+</li><li>
+  In your Linux VM, open a command shell and run the command <code>ping  -c 3  192.168.<span class="fancyfont red">100</span>.50</code> to ping your Windows VM.
+</li><li>
+    You should see the ping traffic in Wireshark.
+</li></ol>
+
+<h2>Examine your new LAN</h2>
+<ol><li>
+    In your Windows VM, start the LLDP Agent.
+
+</li><li>
+    After a few seconds you should again see both the Linux VM and the fake host.
+    <p>
+    What IP address does the interface have now?  (Second column from the left.)
+    </p><p>
+    What addresses do the two reported hosts have? (Column on right side.)
+    </p>
+
+</li><li>
+    Check Windows' LLTD network map.
+    <ol><li>
+        Click the "Start" button, and open the "Control Panel".
+    </li><li>
+        Under the "Network and Internet" group, choose "View network status and tasks".
+    </li><li>
+        On the right-hand side, click on "See full map".
+    </li></ol>
+    You should see the two VMs, with no connection to the Internet.
+    If you hover the mouse over each icon, it will display the host's IP address.
+    <p>
+    Why don't you see the fake host?
+    </p>
+
+</li><li>
+    Start zenmap in the Linux VM:
+<pre class="boxed">sudo zenmap</pre>
+    <ol><li>
+        Put <code class="boxed">192.168.<span class="fancyfont red">100</span>.0/24</code> as the target.
+        This is the network address and subnet mask for your LAN.
+        Replace the value "<span class="fancyfont red">100</span>" with your system number.
+    </li><li>
+        Click the arrow on the right side of the "Profile:" entry box.
+        Choose "Quick scan".
+    </li><li>
+        Click on the "<code class="boxed">Scan</code>" button.
+    </li></ol>
+    How many addresses did Nmap scan?  How many hosts are up?
+    <p>
+    How many ports are open on the Windows VM?
+    </p><p>
+    How many ports are open on the Linux VM?
+    </p>
+
+</li></ol>
+
+<p>
+Shut down both VMs.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

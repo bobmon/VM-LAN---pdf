@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>traceroute Assignment</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-17"/>
+<base href="https://montcs.bloomu.edu" />
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.25in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol { margin-top:1ex; }
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;border:1px dotted #666;
+    font-size:105%;
+    font-weight:normal;
+}
+div.code {page-break-inside:avoid;}
+
+pre {background:#e0e0e0}
+
+ul.python {
+    margin-left:3em;
+    margin-top:0.5ex;
+    list-style:outside '>>> ';
+}
+ul.code li,
+ul.python li {
+    border:none;
+    padding-top:0.2ex;
+    padding-bottom:0.0ex;
+    margin-bottom:0.5ex;
+}
+
+ul.compact {
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+<script type="text/javascript" src="/js/numQs.js"></script>
+</head>
+<body onload="numberItems('Question&nbsp;', 'inum');">
+<div id="title">
+<p class="asn">Network assignment:<br/>Traceroute three ways</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<div class="smaller">
+<h3>assignment format</h3>
+<p>
+This assignment requires a capture of a program's output, described in the first part, and a pdf file created in scapy.
+It also contains labeled, numbered questions that need written answers.
+</p>
+<p>
+You should submit all three files through the "Submit" link on the course webpage.
+At this point you should be able to do so directly from your Linux VM, as well as from the physical host or other computer.
+</p>
+<p>
+ Format the answer file like this:
+</p>
+<div class="inset smaller width550"><pre>
+    YOUR NAME
+    Assignment name/number
+    Date
+
+    1.  Answer to first question.
+        <em style="font-size:80%;color:#600">(Example:  "I installed the Windows version in a virtual
+        machine running DOS 3.21.  I started it using the DOS
+        command RUN WIRESHARK IN WINDOWS.  This doesn't work.")</em>
+
+    2.  Answer to second question.
+        <em style="font-size:80%;color:#600">(Example:  "My network interface is called Billy.")</em>
+
+    3.  Answer to third question.
+
+    ...  and so forth.
+</pre></div>
+</div>
+
+<h1>Traceroute and Scapy</h1>
+
+<p>
+In this assignment you will perform "traceroutes", directly and by using scapy.
+The direct method is easiest, but using scapy provides more insight into the workings of the program.
+</p><p>
+You need to do this assignment on your virtual network.
+(If you have set up a virtual network on your personal computer, you can do it there.)
+One goal of the assignment is to demonstrate that all of the labs have been completed successfully.
+</p>
+
+<div id="traceroute" class="">
+<h2>The traceroute program: finding routes to destinations</h2>
+<p>
+Traceroute works by sending out a series of packets with shortened TTL values.
+The packets expire at intermediate routers on the overall route, and the routers (sometimes) send back error messages to report the packets' losses.
+By collecting the error reports, the presence of the intermediate routers can be discovered.
+By default the packets contain unimportant UDP payloads (on Linux systems), although other payloads are possible.
+Different payloads may give different results, as some routers respond differently depending on the kind of payload.
+</p>
+<p>
+Run a traceroute from your Linux VM or your Windows VM, through your routers, to the Internet and IP address 8.8.8.8.
+Redirect the output of the traceroute into a text file.
+Then edit the text file and add your name, assignment, and date to the beginning of the file.
+Finally, submit this file (from your VM) to the course website.
+</p>
+<h3>Example</h3>
+<p>
+Redirection:  use this command to capture the output of the traceroute command:
+</p>
+<pre class="prompt2 boxed">
+traceroute 8.8.8.8 &gt; traceroute.txt
+</pre>
+<p class="smaller italic">
+This will work on Windows as well as Linux, using the "tracert" command on Windows.
+</p>
+
+<blockquote class="inum">
+Use a text editor (leafpad or gedit on the Linux VM) to add your name, the assignment, and the date to the beginning of the captured file.
+The result should look similar to this screenshot:
+<object data="/VM-LAN/traceroute.txt.html" class="boxed" style="width:85%;height:42ex;margin:auto;background:#ffd;">
+<pre class="boxed smaller" style="width:95%;margin:auto;background:#ffd">
+Instructor
+2017-08-17
+traceroute assignment
+
+Tracing route to google-public-dns-a.google.com [8.8.8.8]
+over a maximum of 30 hops:
+
+  1    &lt;1 ms    &lt;1 ms    &lt;1 ms  172.16.119.1 
+  2    &lt;1 ms    &lt;1 ms    &lt;1 ms  10.0.141.1 
+  3     1 ms     1 ms     1 ms  router.brand.com [192.168.0.1] 
+  4     1 ms     1 ms     1 ms  192.168.255.1 
+  5   205 ms   206 ms   214 ms  10.29.27.1 
+  6   704 ms   644 ms   688 ms  P0-0-1-7.SCTNPA-LCR-22.verizon-gni.net [130.81.196.10] 
+  7     *        *        *     Request timed out.
+  8   285 ms   311 ms   219 ms  0.ae14.GW13.NYC1.ALTER.NET [140.222.234.197] 
+  9   232 ms   226 ms   173 ms  google-gw.customer.alter.net [204.148.18.206] 
+ 10   193 ms   198 ms   207 ms  209.85.247.33 
+ 11   316 ms   342 ms   245 ms  209.85.243.1 
+ 12   170 ms   161 ms   160 ms  google-public-dns-a.google.com [8.8.8.8] 
+
+Trace complete.
+</pre>
+</object>
+
+<p class="">
+Use a browser on your VM to connect to the course website, and upload your "traceroute.txt" file.
+</p>
+</blockquote>
+
+
+<h2>Traceroute via scapy</h2>
+<p>
+The traceroute function can be performed using different protocols, in order to get responses from different routers with different firewall rules.
+Scapy has traceroute functionality built in, or you can "roll your own".
+</p>
+<p>
+Start scapy with root privileges in your Linux VM.
+<pre class="prompt2 boxed">
+sudo scapy
+</pre>
+</p>
+
+<h3>Hand-crafted traceroute</h3>
+<p>
+For this approach you will send out packets with ICMP payloads instead of UDP payloads.
+The destination will be the same, the 8.8.8.8 IP address.
+The number of attempts is set to 25, which should be enough for most routes while not taking too much time.
+</p>
+<ol><li>
+    Perform a traceroute based on the ICMP ("ping") protocol.
+    In the following steps, <strong>indent the lines as shown!</strong>
+    <ul class="python code"><li>
+        import time
+    </li><li>
+        resp = []
+    </li><li>
+        for t in range(1,25):
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;ip = IP(dst='8.8.8.8', ttl=t, id=RandShort())
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;ts = time.time()
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;r = sr1( ip/ICMP(), retry=1, timeout=3 )
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;te = time.time()
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;resp.append((t,r, (te-ts)*1000))
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;if r and r.src == '8.8.8.8':
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break
+    </li><li>
+    </li><li>
+        print( len(resp), 'responses' )
+    </li></ul>
+    <p class="inum">
+    How many responses did you receive?
+    </p>
+    This is the number of intermediate routers, or "hops", between you and the '8.8.8.8' destination.
+
+</li><li>
+    Display the route that you discovered.
+    Again, pay attention to the indentation of the lines:
+    <ul class="python code"><li>
+        for l in resp:
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;print( '{:2}  {:8.3f} ms&nbsp;&nbsp;&nbsp;&nbsp;'.format(l[0], l[2]), end='')
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;if l[1]:
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print( l[1].src )
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;else:
+    </li><li>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print( '*' )
+    </li></ul>
+    <p class="inum">
+    Which hop took the least amount of time?  How much?
+    <br/>
+    Which hop took the most?  How much?
+    </p>
+</li></ol>
+
+<h3>Scapy traceroute and graph</h3>
+<ol><li>
+    Perform a scapy traceroute:
+    <ul class="python code"><li>
+        resp, unanswered = traceroute('8.8.8.8', maxttl=16)
+    </li><li>
+        print( len(resp), 'responses' )
+    </li><li>
+        print( len(unanswered), 'no-answers' )
+    </li></ul>
+    <p class="inum">
+    How many responses did you get?
+    <br/>
+    How many hops did not return any answer?
+    </p>
+
+</li><li>
+    Display the result graphically:
+    <ul class="python code"><li>
+        resp.graph()
+    </li></ul>
+
+</li><li>
+    Traceroute can produce graphs of comparative paths:
+    <ul class="python code"><li>
+        resp2, unanswered2 = traceroute( ['cisco.com', 'microsoft.com', 'google.com', 'bloomu.edu'], maxttl=16 )
+    </li><li>
+        resp2.graph()
+    </li></ul>
+
+</li><li>
+    The <tt>.graph()</tt> method accepts optional arguments to write out a file in .pdf, .gif, or .svg formats.
+    <ul class="python code"><li>
+        resp2.graph(format='pdf', target='paths.pdf')
+    </li></ul>
+    Then, in a separate terminal, run the command:
+<pre class="prompt2 boxed">
+evince paths.pdf
+</pre>
+    <p class="inum">
+    Submit the "paths.pdf" file as part of your assignment.
+    </p>
+
+</li></ol>
+</div><!-- traceroute -->
+
+</li></ol>
+
+</div><!-- UDP -->
+
+<h3>shut down</h3>
+<p>
+Close down scapy by entering the <code>exit()</code> command.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

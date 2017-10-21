@@ -1,0 +1,488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Gateway-Router Worksheet</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-15"/>
+<base href="https://montcs.bloomu.edu"/>
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    /*width:8.5in;*/
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol {margin-top:1ex;list-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#f7f7f7;border:1px dotted #666;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+ul.compact {
+    /* list-style: inside url(python-cursor.png); */
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+pre {background:#e0e0e0;}
+.Remark {color:#060;}
+.red {color:#f00;)
+
+/*
+pre.prompt::before {
+    content:"vyos# ";
+    color:#0000d7;
+    font-weight:bold;
+}
+pre.prompt2::before {
+    content:":~$ ";
+    color:#0000d7;
+    font-weight:bold;
+}
+*/
+
+</style>
+
+<script type="text/javascript" src="/js/utilities.js"></script>
+</head><body class="">
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>VyOS Internet Gateway-Router Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<img class="floatright width350" src="/VM-LAN/VM-network.3.gateway-router.svg" alt="w/ gateway router" />
+<h1 style="clear:left">Route the LAN to the Internet</h1>
+In this worksheet you will add another router to your installation.
+This router will indirectly connect your LAN to the Internet.
+It serves as a "gateway router" for the "Intranet" formed by the virtual subnets.
+
+<h3 style="clear:left">Install a Gateway Router</h3>
+Repeat these steps from the VyOS worksheet:
+<ol><li>
+    Run the command <code>virtualbox</code> from the command line, or find the link from the start menu.
+</li><li>
+    Click on "New" from the VM manager window.
+    Name this machine "gateway-&lt;number&gt;", where "&lt;number&gt;" is the last number of your physical host's IP address (<em>e.g.</em> 106 or 118).
+    Set the "Type" and "Version" as Linux, Debian 64-bit, and click on "Next &gt;".
+</li><li>
+    Set the Memory at 256 MB, and click on "Next".
+    <p>
+    Check "Create a virtual hard drive now", and click on "Create".
+    </p><p>
+    Check "VDI (VirtualBox Disk Image)", and click on "Next".
+    </p><p>
+    Check "Dynamically allocated", and click on "Next".
+    </p><p>
+    Set the virtual hard drive size to about 2 GB, and click on "Create".
+    </p>
+    <br/>
+</li><li>
+    Select your new VM in the VM manager.
+    <p>
+    Click on the "Settings" icon.
+    </p>
+    <ol><li>
+        Choose the "Storage" item on the left.
+    </li><li>
+        Choose the "Empty" item under "Controller: IDE".
+        <ul class="compact"><li>
+            Click on the "CD" icon under the Attributes section on the right.
+            <br/>
+            Select "Choose a virtual CD/DVD disk file..."
+        </li><li>
+            Browse to where you saved the vyos .iso file.
+            Double-click on it.
+        </li></ul>
+    </li><li>
+        Choose the "Network" item in the dialog box.
+    </li><li class="">
+        You should see a tab labeled "Adapter 1".
+        <ul class="compact"><li>
+            Verify that it is enabled, and attached to NAT.
+        </li></ul>
+        <p>
+        (This is your connection to the Internet.)
+        </p>
+    </li><li>
+        Click the tab labeled "Adapter 2".
+        <ul class="compact"><li>
+            Check the "Enable Network Adapter" box.
+        </li><li class="HIDE">
+            Set it to be Attached to: "Internal Network".
+            Enter "<strong>routernet</strong>" for the network name.
+        </li><li class="">
+            Set it to be Attached to: "Bridged Adapter".
+            The selected interface should be your physical host's NIC, possibly "eno1".
+        </li></ul>
+        <p>
+        (This is your connection to everyone's access routers.)
+        </p>
+    </li><li>
+        Click on "OK".
+    </li></ol>
+    <p>&nbsp;</p>
+
+</li><li>
+    Select your new VM in the VM manager, and click on <span class="boxed">Start</span>.
+    VyOS will ask you to press "ENTER" to boot.
+    Go ahead and do so.
+    <p>
+    You should see a basic text-mode login.
+    Login with username "vyos" and password "vyos"  (sense a pattern here?)
+    </p>
+</li><li>
+    At the command prompt, run the command <pre class="prompt2 boxed">install image</pre>
+    Note: until the configuration is completed, you may get occasional messages saying <strong>"INIT:&nbsp;Id&nbsp;"T0"&nbsp;respawing&nbsp;too&nbsp;fast:&nbsp;disabled&nbsp;for&nbsp;5&nbsp;minutes</strong>
+    <br/>
+    Ignore these, and just press the Enter key to move on.
+    It will ask a series of questions, and offer a default answer in [square brackets].
+    <br/>
+    Press Enter to accept the defaults for most of the questions <strong>except</strong>:
+    <ol><li>
+        "This will destroy all data on /dev/sda. Continue?" (the default is "No").
+        <br/>
+        Enter "yes" for this question.
+    </li><li>
+        "What would you like to name this image?" (the default is a number).
+        <br/>
+        Name the image "gateway-<span class="fancyfont red">x</span>" (replace <span class="fancyfont red">x</span> with your system number, for example "gateway-108" or "gateway-97").
+    </li><li>
+        "Enter password for user 'vyos':"
+        <br/>
+        Re-enter the password "vyos" twice.
+    </li></ol>
+</li><li>
+    Once the installation is done, enter the command <pre class="prompt2 boxed">poweroff</pre>
+    <p>&nbsp;</p>
+
+</li><li>
+    Click on the "Settings" menu in the VM manager.
+    <ol><li>
+        Choose "Storage", and select the vyos .iso line.
+    </li><li>
+        Click on the round "CD" icon in the Attributes panel on the right.
+    </li><li>
+        Click on "Remove disk from virtual drive".
+    </li><li>
+        Click on "OK".
+    </li></ol>
+
+</li><li>
+    Restart your vyos VM.
+    Press "Enter" twice, to boot the VM, or just wait for it.
+    <p>
+    Login, using account "vyos" and password "vyos".
+    </p>
+    <p>
+    You may continue to see messages saying <strong>"INIT:&nbsp;Id&nbsp;"T0"&nbsp;respawing&nbsp;too&nbsp;fast:&nbsp;disabled&nbsp;for&nbsp;5&nbsp;minutes</strong>
+    <br/>
+    It is safe to ignore them; you will turn them off in a few minutes.
+    </p>
+
+</li></ol>
+
+<hr/>
+
+<h3>Configure VyOS to route between your LAN and the campus network.</h3>
+<p>
+<strong>In the following steps replace <em class="fancyfont red">x</em> with your system number.</strong>
+</p>
+<p>
+Restart your gateway router (the new one).
+Press "Enter" twice, to boot the VM, or just wait for it.
+</p>
+<p>
+Login to the router, using account "vyos" and password "vyos".
+</p>
+<p>
+Enter these commands:
+</p>
+<ol><li>
+Start the configuration:
+<pre class="prompt2 boxed">
+configure
+</pre>
+
+</li><li>
+    Get rid of the "INIT: Id ..." messages:
+<pre class="prompt boxed">
+delete system console device ttyS0
+commit
+</pre>
+
+</li><li class="">
+    Name your router:
+<pre class="prompt boxed">
+set system host-name 'gateway-<span class="fancyfont red">x</span>'
+</pre>
+
+</li><li>
+    Configure the gateway router's interface to the outside world:
+<pre class="prompt boxed">
+set interfaces ethernet eth0 address dhcp
+set interfaces ethernet eth0 description 'World'
+</pre>
+
+</li><li>
+    Configure the interface to other routers:
+<pre class="prompt boxed">
+set interfaces ethernet eth1 address '10.141.<span class="fancyfont red">x</span>.1/16'
+set interfaces ethernet eth1 description 'ROUTERNET'
+</pre>
+
+</li><li>
+    Check your settings with the command:
+<pre class="prompt boxed">
+show interfaces
+</pre>
+    <p>
+    if they aren't right, remove the incorrect lines with the "delete" command (use it in place of "set") and re-enter the lines correctly.
+    Once things look right, commit and save your work:
+<pre class="prompt boxed">
+commit
+save
+</pre>
+    <br/>
+
+</li><li>
+    Set up RIPv2 routing.
+    This will share routing information with the other routers that are specified as neighbors.
+    <p>
+    For this you will need your "neighbor" LAN network addresses &mdash; these will be the LAN numbers one less than, and one greater than, your own.
+    For example, if your LAN number is 103, then your neighbors will be 102 and 104.
+    (The instructor machine, LAN number 119, has neighbors 118 and 120.)
+    </p>
+<pre class="prompt boxed">
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+<span class="Remark fancyfont"># Configure RIPv2 on gateway router.</span>
+<span class="Remark fancyfont"># Configure a couple of neighbors, <span class="fancyfont red">.y</span> and <span class="fancyfont red">.z</span></span>
+<span class="Remark fancyfont"># 2016-12-30</span>
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+
+<span class="Remark fancyfont"># This appears to prevent duplicated ping responses?</span>
+set interfaces loopback lo address 1.1.1.<em class="fancyfont red">x</em>/32
+
+<span class="Remark fancyfont"># Set default route.</span>
+<span class="Remark fancyfont">#   If you set this up at home, change "148.137.141.1" to the IP address of your wifi router.</span>
+set protocols static route 0.0.0.0/0 next-hop 148.137.141.1 distance '10'
+
+<span class="Remark fancyfont"># Configure RIP on connected networks</span>
+<span class="Remark fancyfont"># Replace <em class="fancyfont red">x</em> with your subnet number.</span>
+set protocols rip redistribute connected
+set protocols rip network 10.141.0.0/16
+set protocols rip neighbor 10.141.<em class="fancyfont red">x</em>.2&nbsp;&nbsp;<span class="Remark fancyfont"># this is your access router.</span>
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+</pre>
+    <p>
+    Check your work again with the command:
+    </p>
+<pre class="prompt boxed">
+show protocols
+</pre>
+    <p>
+    Correct any mistakes, then commit and save your work:
+<pre class="prompt boxed">
+commit
+save
+</pre>
+    <br/>
+
+</li><li class="">
+Configure Network Address Translation (NAT):
+<pre class="prompt boxed">
+<span class="Remark fancyfont">#-----------------------------------------------------------
+# Set NAT on gateway router.
+# 2016-12-30
+#-----------------------------------------------------------
+</span>
+<span class="Remark fancyfont"># Hide LAN hosts behind router's IP address</span>
+set nat source rule 100 outbound-interface 'eth0'
+set nat source rule 100 source address '192.168.0.0/16' <span class="Remark fancyfont"># NAT all 192.168 addresses!</span>
+set nat source rule 100 translation address masquerade
+
+<span class="Remark fancyfont"># Hide routers too</span>
+set nat source rule 200 outbound-interface 'eth0'
+set nat source rule 200 source address '10.141.0.0/16' <span class="Remark fancyfont"># NAT all router IPs</span>
+set nat source rule 200 translation address masquerade
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+
+show nat
+</pre>
+    <p>
+    Correct any mistakes, then commit and save your work:
+<pre class="prompt boxed">
+commit
+save
+</pre>
+    <br/>
+
+</li><li class="">
+    Configure DNS forwarding to handle domain name lookups:
+<pre class="prompt boxed">
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+<span class="Remark fancyfont"># DNS on access router is forwarded to an upstream router.</span>
+set service dns forwarding cache-size '0'
+set service dns forwarding listen-on 'eth1'
+set service dns forwarding name-server '148.137.11.15'
+set service dns forwarding name-server '148.137.8.15'
+set service dns forwarding name-server '8.8.8.8'&nbsp;&nbsp;<span class="Remark fancyfont"># (only needed if off-campus?)</span>
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+
+show service
+</pre>
+    <p>
+    Correct any mistakes, then commit and save your work:
+<pre class="prompt boxed">
+commit
+save
+</pre>
+
+</li></ol>
+
+<hr/>
+
+<h3>Modify your access router to use your new gateway router.</h3>
+<p>
+</p>
+<p>
+Start your access router if it isn't already running.
+<br/>
+Login to the router, using account "vyos" and password "vyos".
+</p>
+<p>
+Enter these commands:
+</p>
+<ol><li>
+Start the configuration:
+<pre class="prompt2 boxed">
+configure
+</pre>
+
+</li><li>
+    Remove the previous default route:
+<pre class="prompt boxed">
+delete protocols static route 0.0.0.0/0
+</pre>
+
+</li><li class="">
+    <strong>In this step replace <em class="fancyfont red">x</em> with your system number.</strong>
+    Set a default route through your gateway router:
+<pre class="prompt boxed">
+set protocols static route 0.0.0.0/0 next-hop 10.141.<em class="fancyfont red">x</em>.1&nbsp;&nbsp;<span class="Remark fancyfont"># your gateway router.</span>
+</pre>
+
+</li><li>
+    <p>
+    Commit and save the new default route:
+<pre class="prompt boxed">
+commit
+save
+</pre>
+</li></ol>
+
+
+<h3>Test your Router</h3>
+<strong>In the following steps replace <em class="fancyfont red">x</em> with your system number.</strong>
+<ol><li>
+    Reboot your new gateway router:
+<pre class="prompt boxed">
+sudo reboot
+</pre>
+
+</li><li>
+    Login again: "vyos", password "vyos".
+
+</li><li>
+    Wait a few seconds to allow your gateway router to get a DHCP address from the physical host.
+    Then verify that your gateway router is connected to the Internet:
+    run the command <code>ping  4.2.2.2</code>.
+    <p>
+    You should get a reply from an Internet host.
+    After a few pings, enter a &lt;Ctrl&gt;-C to end the pings.
+    </p>
+</li><li>
+    Ping a domain name: <code>ping  google.com</code>.
+    <p>
+    This should also work.
+    </p>
+    <p>&nbsp;</p>
+</li><li>
+    Start your access router, and your both Windows and Linux clients, along with the new gateway router.
+</li><li>
+    Use either your Linux or Windows VM to run the command <code>ping  10.141.<span class="fancyfont red">x</span>.1</code>.
+    This will verify that your access router is actually routing.
+</li><li>
+    Run the command <code>ping  4.2.2.2</code> from your client VM (Linux or Windows).
+    If this succeeds, you're connected to the Internet.
+</li><li>
+    Run the command <code>ping  google.com</code> from your client VM (Linux or Windows).
+    This tests your DNS functionality.
+</li><li>
+    Try pinging one of your neighbor's VMs.
+    You should still be able to ping other people in the class, including the instructor.
+</li><li>
+    <img class="floatright" src="/VM-LAN/LLTD-map-2.png" alt="VM-LAN LLTD map" width="384px" />
+    <ol><li>
+        In your Windows client, click the "Start" button, and open the "Control Panel".
+    </li><li>
+        Under the "Network and Internet" group, choose "View network status and tasks".
+    </li><li>
+        On the right-hand side, click on "See full map".
+    </li><li>
+        You should now see a map showing your two VMs, connected through your access router to the Internet.
+        (The gateway router will not appear, because it is not part of the LAN subnet; the hub function is provided by the Virtualbox Manager.)
+        If you hover the mouse over each icon, it will display the host's IP address.
+    </li></ol>
+
+</li></ol>
+
+<hr/>
+
+<h4>
+Congratulations!  You've set up your gateway router.
+</h4>
+<img class="floatright" width="95%" src="/VM-LAN/VM-network.6.router-network.svg" alt="router network" />
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Access-Router Worksheet</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-25"/>
+<base href="https://montcs.bloomu.edu">
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 { margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+h4 { margin-bottom:1ex; }
+
+ol {margin-top:1ex;list-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li { margin-top:0.5ex; margin-bottom:2ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e7e7e7;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+ul.compact {
+    /* list-style: inside url(python-cursor.png); */
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+pre { background:#e0e0e0; }
+
+.vyos {border:1px dotted #666;}
+ul.vyos {
+    margin-left:2em;
+    padding:2px;
+    padding-left:3px;
+    background:#eef;
+    color:#003;
+    list-style-type:none;
+}
+ul.vyos>li {
+    margin:0;
+    padding:2px;
+    border:none;
+    text-indent:-2.90em;
+}
+ul.vyos>li::before {
+    content: "vyos# ";
+    color:#00b;
+}
+
+.shell {border:1px dotted #666;}
+ul.shell {
+    margin-left:2em;
+    padding:2px;
+    padding-left:3px;
+    background:#e7e7e7;
+    color:#300;
+    list-style-type:none;
+}
+ul.shell>li {
+    margin:0;
+    padding:2px;
+    border:none;
+    text-indent:-2.15em;
+}
+ul.shell>li::before {
+    content: "sh $ ";
+    color:#300;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+
+</head><body class="" >
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>VyOS Access-Router Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<img class="floatright" src="/VM-LAN/VM-network.2.access-router.svg" width="45%" alt="access-router VM" />
+
+<h1 style="clear:left">Add a Router to the LAN</h1>
+
+<p style="clear:none">
+In this worksheet you will add a third VM, a router, to your Local Area Network.
+This router connects your LAN to other LANs and is known as an <em>access router</em>.
+On small networks it is also sometimes known as an <em>edge router</em> (and possibly some other names).
+From your LAN's point of view, it is the <em>default router</em>.
+</p>
+
+<hr/>
+
+<h2>VyOS Router VM</h2>
+<h3>Install and check out the VM.</h3>
+<ol><li class="">
+    To start, get the VyOS image:
+    <ul class="compact"><li>
+        <ul class="shell"><li>
+            cd ~/
+        </li><li>
+            mountmadhome
+        </li><li>
+            cp <strong>~/MadData/DIGFOR275-All/VM-LAN/vyos-1.1.7-amd64.iso</strong>  ~/Downloads/
+        </li></ul>
+
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>or</em><br/><br/></p>
+    </li><li>
+        Find and download a copy from <a href="http://vyos.net">http://vyos.net</a>).
+    </li></ul>
+
+</li><li class="HIDE">
+    To start, obtain a router .ISO file:
+    <ul class="compact"><li>
+        Browse to the file <a href="/Networking/Software/VM-LAN/vyos-1.1.7-amd64.iso">https://montcs.bloomu.edu/Networking/Software/VM-LAN/vyos-1.1.7-amd64.iso</a>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>or</em></p>
+    </li><li>
+        Find and download a copy from <a href="http://vyos.net">http://vyos.net</a>).
+    </li></ul>
+    <br/>
+
+</li><li>
+    Start virtualbox, and create a new VM using the VyOS .ISO file:
+    <ol><li>
+        Click on "New" from the VM manager window.
+    </li><li>
+        Name this machine "access-<span class="fancyfont red">x</span>", where "<span class="fancyfont red">x"</span> is your system number (<em>e.g.</em> 106 or 118).
+    </li><li>
+        Set the "Type" and "Version" as Linux, Debian 64-bit, and click on "Next &gt;".
+    </li><li>
+        Set the Memory at 256 MB, and click on "Next".
+    </li><li>
+        Check "Create a virtual hard drive now", and click on "Create".
+    </li><li>
+        Check "VDI (VirtualBox Disk Image)", and click on "Next".
+    </li><li>
+        Check "Dynamically allocated", and click on "Next".
+    </li><li>
+        Set the virtual hard drive size to about 2 GB, and click on "Create".
+    </li></ol>
+
+</li><li>
+    Select your VyOS VM in the VM manager, and click on the "Settings" icon.
+    <ol><li>
+        Choose the "Storage" item on the left.
+    </li><li>
+        Choose the "Empty" item under "Controller: IDE".
+    </li><li>
+        Click on the "CD" icon under the Attributes section on the right.
+        Select "Choose a virtual CD/DVD disk file..."
+    </li><li>
+        Browse to where you saved the vyos .iso file.
+        Double-click on it.
+    </li><li>
+        Choose the "Network" item in the dialog box.
+
+    </li><li>
+        You should see a tab labeled "Adapter 1" that is enabled (perhaps attached to NAT).
+        <ul class="compact"><li>
+            Click on the drop-down box for this and select "Bridged Adapter" instead.
+            The selected interface should be your physical host's NIC, possibly "eno1".
+        </li></ul>
+        <p>
+        (This is your router's connection to other routers.)
+        </p>
+
+    </li><li>
+        Click the tab labeled "Adapter 2".
+        <ul class="compact"><li>
+            Check the "Enable Network Adapter" box.
+        </li><li>
+            Click on the drop-down box for this and select "Internal Network".
+            Name this network "intnet".
+        </li></ul>
+        <p>
+        (This is your router's connection to your private LAN.)
+        </p>
+
+    </li><li>
+        Click on "OK".
+    </li></ol>
+
+</li><li>
+    Select your new VM in the VM manager, and click on <span class="boxed">Start</span>.
+    VyOS will ask you to press "ENTER" to boot.
+    Go ahead and do so.
+    <p>
+    You should see a basic text-mode login.
+    Login with username "vyos" and password "vyos"  (sense a pattern here?)
+    </p>
+</li><li>
+    At the command prompt, run the command
+    <ul class="vyos"><li>install image</li></ul>
+    <p>
+    Note: until the configuration is completed, you may get occasional messages saying <strong>"INIT:&nbsp;Id&nbsp;"T0"&nbsp;respawing&nbsp;too&nbsp;fast:&nbsp;disabled&nbsp;for&nbsp;5&nbsp;minutes</strong>
+    <br/>
+    Ignore these, and just press the Enter key to move on.
+    It will ask a series of questions, and offer a default answer in [square brackets].
+    </p>
+    Press Enter to accept the defaults for most of the questions <strong>except</strong>:
+    <ol><li>
+        "This will destroy all data on /dev/sda. Continue?" (the default is "No").
+        <br/>
+        Enter "yes" for this question.
+    </li><li>
+        "What would you like to name this image?" (the default is a number).
+        <br/>
+        Name the image "access-<span class="fancyfont red">x</span>" (replace <span class="fancyfont red">x</span> with your system number, for example "access-108" or "access-97").
+    </li><li>
+        "Enter password for user 'vyos':"
+        <br/>
+        Re-enter the password "vyos" twice.
+    </li></ol>
+</li><li>
+    Once the installation is done, enter the command
+    <ul class="vyos"><li>poweroff</li></ul>
+    <p>&nbsp;</p>
+
+</li><li>
+    Click on the "Settings" menu in the VM manager.
+    <ol><li>
+        Choose "Storage", and select the vyos .iso line.
+    </li><li>
+        Click on the round "CD" icon in the Attributes panel on the right.
+    </li><li>
+        Click on "Remove disk from virtual drive".
+    </li><li>
+        Click on "OK".
+    </li></ol>
+
+</li><li>
+    Restart your vyos VM.
+    Press "Enter" twice, to boot the VM, or just wait for it.
+    <p>
+    Login, using account "vyos" and password "vyos".
+    </p>
+    <p>
+    You may continue to see messages saying <strong>"INIT:&nbsp;Id&nbsp;"T0"&nbsp;respawing&nbsp;too&nbsp;fast:&nbsp;disabled&nbsp;for&nbsp;5&nbsp;minutes</strong>
+    <br/>
+    It is safe to ignore them; you will turn them off in a few minutes.
+    </p>
+
+</li><li>
+    In the VM, run the command:
+    <ul class="vyos"><li>
+        ip addr show
+    </li></ul>
+    <p>
+    You should see three interfaces: the loopback device "lo", with IP address 127.0.0.1, and the interfaces "eth0" and "eth1".
+    </p><p>
+    Does eth0 have an IP address?
+    How about eth1?
+    </p>
+</li></ol>
+
+<h3>Configure VyOS to manage your LAN.</h3>
+<p class="">
+To properly configure VyOS you must run the "configure" mode, <strong>set</strong> items as needed, <strong>commit</strong> your configuration to memory, and <strong>save</strong> the configuration so that it returns after a reboot.
+You may also need to <strong>delete</strong> some items, which is the opposite of setting them.
+</p>
+<p>
+<strong>In the following steps, replace the value "<span class="fancyfont red">x</span>" with the last part of your physical host's IP address.</strong>
+</p>
+
+<p>The following are adapted from <a href="http://vyos.net/wiki/User_Guide">http://vyos.net/wiki/User_Guide</a>.
+Enter these commands into your VyOS router's terminal:
+</p>
+<ol><li>
+    Start the configuration:
+    <ul class="vyos"><li>
+        configure
+    </li></ul>
+
+</li><li>
+    Enter these two lines:
+    <ul class="vyos"><li>
+        delete system console device ttyS0
+    </li><li>
+        commit
+    </li></ul>
+
+    This will eliminate the "INIT: Id ..." messages
+    <br/>
+
+</li><li>
+    Configure the interface to other routers:
+    <ul class="vyos"><li>
+        set interfaces ethernet eth0 address '10.141.<span class="fancyfont red">x</span>.2/16'
+    </li><li>
+        set interfaces ethernet eth0 description 'ROUTERNET'
+    </li></ul>
+
+</li><li>
+    Configure the internal LAN interface:
+    <ul class="vyos"><li>
+        set interfaces ethernet eth1 address '192.168.<span class="fancyfont red">x</span>.49/24'
+    </li><li>
+        set interfaces ethernet eth1 description 'LAN'
+    </li></ul>
+
+</li><li>
+    Check your settings with the command:
+    <ul class="vyos"><li>
+        show interfaces
+    </li></ul>
+    This will show what changes are proposed for the network interfaces &mdash; lines with a "+" at the beginning will be saved by a "commit" command.
+    (Any lines beginning with "-" would be removed.)
+    <p>
+    if they aren't right, remove the incorrect lines with the "delete" command (use it in place of "set") and re-enter the lines correctly.
+
+</li><li class="">
+    Allow remote connection (more convenient than the console shell):
+    <ul class="vyos"><li>
+        set service ssh port '22'
+    </li></ul>
+    Once this is set, you will be able to open a remote shell from your Linux VM to the router, and do anything you need there.
+    (This will give you a bigger terminal if you want to see more of what's going on.)
+
+</li><li class="">
+    Once things look right, commit your work again, and save it:
+    <ul class="vyos"><li>
+        commit
+    </li><li>
+        save
+    </li></ul>
+
+</li><li class="">
+    Give your router a name:
+    <ul class="vyos"><li>
+        set system host-name 'access-<span class="fancyfont red">x</span>'
+    </li></ul>
+    (Not really important, but helpful for identifying the router.)
+
+</li><li>
+    Set up default, static, and RIPv2 routing.
+    <p>
+    In the lines below, replace the <span class="fancyfont red">x</span> with your system's number &mdash; the last part of your physical IP address.
+    Replace the <span class="fancyfont red">y</span> and <span class="fancyfont red">z</span> with values one less than and one more than your own system number; for example, if your own system is 119 ("148.137.141.119"), then use 118 and 120.
+    (The 119 system is the instructor's machine.)
+    </p>
+    <p>
+    Lines beginning with "#" are comments &mdash; you can skip them (but read them for understanding).
+    </p>
+<ul class="vyos"><li>
+<span class="Remark fancyfont">#-----------------------------------------------------------
+<br /># Configure routing on access router.
+<br /># For the class "intranet" all routers are on a single, common subnet, 10.141.0.0/16 ---
+<br /># in a real-world setup routers would have multiple connections to different subnets,
+<br /># and RIP would have to be configured on each of them.
+<br />#
+<br /># Configure a couple of neighbors, .<span class="fancyfont red">y</span> and .<span class="fancyfont red">y</span>;
+<br /># configure the gateway router, .<span class="fancyfont red">x</span>.1, as a neighbor.
+<br /># 2017-03-09
+<br />#-----------------------------------------------------------</span>
+
+</li><li>
+<span class="Remark fancyfont"># This appears to prevent duplicated ping responses?</span>
+</li><li>
+set interfaces loopback lo address 1.1.1.<span class="fancyfont red">x</span>/32
+
+</li><li>
+<span class="Remark fancyfont"># Set correct default route:</span>
+</li><li>
+<span class="Remark fancyfont"># (This depends on a correct setup of the instructor's router.)</span>
+</li><li>
+set protocols static route 0.0.0.0/0 next-hop 10.141.119.1 distance '10'&nbsp;&nbsp;<span class="Remark fancyfont"># instructor's gateway router.</span>
+
+</li><li>
+<span class="Remark fancyfont"># Configure RIPv2 on connected networks.  Numbers .<span class="fancyfont red">y</span> and .<span class="fancyfont red">z</span> are</span>
+</li><li>
+<span class="Remark fancyfont"># one number larger and smaller than the local subnet number (.<span class="fancyfont red">x</span>).</span>
+</li><li>
+set protocols rip redistribute connected
+</li><li>
+set protocols rip network 10.141.0.0/16&nbsp;&nbsp;<span class="Remark fancyfont"># the routers subnet</span>
+</li><li>
+set protocols rip neighbor 10.141.<span class="fancyfont red">y</span>.2
+</li><li>
+set protocols rip neighbor 10.141.<span class="fancyfont red">z</span>.2
+</li><li>
+set protocols rip neighbor 10.141.<span class="fancyfont red">x</span>.1&nbsp;&nbsp;<span class="Remark fancyfont"># (your own gateway router, not installed yet)</span>
+</li><li>
+<span class="Remark fancyfont">#-----------------------------------------------------------</span>
+</li></ul>
+
+</li><li class="">
+    Check your work again with the command:
+    <ul class="vyos"><li>
+        show protocols
+        <p>
+    </li></ul>
+    You should see a static default route (0.0.0.0/0), and the RIP configuration with your immediate neighbors listed.
+    </p>
+    <p>
+    Correct any mistakes, then commit and save your work:
+    <ul class="vyos"><li>
+        commit
+    </li><li>
+        save
+    </li></ul>
+    <br/>
+
+</li><li class="">
+    Configure a DNS forwarder to handle domain name lookups:
+    <ul class="vyos"><li>
+        <span class="Remark fancyfont">#-----------------------------------------------------------</span>
+        <br /><span class="Remark fancyfont"># DNS on access router is forwarded to an upstream router.</span>
+    </li><li>
+        set service dns forwarding cache-size '0'&nbsp;&nbsp;<span class="Remark fancyfont"># unlimited entries</span>
+    </li><li>
+        set service dns forwarding listen-on 'eth1'&nbsp;&nbsp;<span class="Remark fancyfont"># listen to private LAN</span>
+    </li><li>
+        set service dns forwarding name-server '10.141.<span class="fancyfont red">x</span>.1'
+    </li><li>
+        <span class="Remark fancyfont">#-----------------------------------------------------------</span>
+
+    </li><li>
+        show service
+    </li></ul>
+    <p>
+    Once things look right, commit and save your work:
+    <ul class="vyos"><li>
+        commit
+    </li><li>
+        save
+    </li></ul>
+
+</li><li class="">
+    Enable the LLDP protocol:
+    <ul class="vyos"><li>
+        <span class="Remark fancyfont">#-----------------------------------------------------------</span>
+        <br /><span class="Remark fancyfont"># Set router as an LLDP participant.</span>
+    </li><li>
+        set service lldp&nbsp;&nbsp;<span class="Remark fancyfont"># enable LLDP</span>
+    </li><li>
+        set service lldp interface eth1&nbsp;&nbsp;<span class="Remark fancyfont"># participate on private LAN</span>
+    </li><li>
+        <span class="Remark fancyfont">#-----------------------------------------------------------</span>
+    </li></ul>
+    Once this is set, you will be able to open a remote shell from your Linux VM to the router, and do anything you need there.
+    (This will give you a bigger terminal if you want to see more of what's going on.)
+
+</li><li>
+    Apply the configuration again, and save the configuration for future reboots (again):
+    <ul class="vyos"><li>
+        commit
+    </li><li>
+        save
+    </li></ul>
+
+</li><li>
+    <strong>... and finish up.</strong>
+    <ul class="vyos"><li>
+        exit
+    </li></ul>
+
+</li></ol>
+
+<div class=""><!-- Test -->
+<h3>Test your Router</h3>
+
+<strong>In the following steps, replace the value "<span class="fancyfont red">x</span>" with the last part of your physical host's IP address.</strong>
+<ol><li>
+    Use your Linux and Windows VMs to run the command <code class="boxed">ping  192.168.<span class="fancyfont red">x</span>.49</code>.
+    This will test your new router installation.
+
+</li><li>
+    Also from the clients, run the command <code class="boxed">ping  10.141.<span class="fancyfont red">x</span>.2</code>.
+    This tests the router's ability to route to its external interface.
+
+</li><li class="">
+    Look at the LLTD map of your LAN again:
+    <ol><li>
+        In your Windows VM, click the "Start" button, and open the "Control Panel".
+    </li><li>
+        Under the "Network and Internet" group, choose "View network status and tasks".
+    </li><li>
+        On the right-hand side, click on "See full map".
+    </li><li>
+        The map should show your two VMs and also your access router, but no route to the Internet.
+        <p>
+        If you hover the mouse over each icon, it will display the host's IP address.
+        If you hover the mouse over the "gateway" icon, you should see its IP address and MAC address, but the name isn't correct.
+        </p>
+    </li></ol>
+
+</li><li class="">
+    Look at the LLDP maps of your LAN again:
+    <ol><li>
+        In your Windows VM, run the "LLDP Agent".
+        <p>
+        After a few seconds, you should see your router listed as one of the hosts.
+        </p>
+    </li><li>
+        In your Linux VM, run the command
+            <code class="boxed">lldpcli show neighbors</code>.
+        <ul class="shell"><li>
+            lldpcli show neighbors
+        </li></ul>
+        <p>
+        You should see your Windows VM and your router both listed.
+        </p>
+    </li></ol>
+
+</li><li>
+    You may be able to ping your neighbors' clients and routers, as well.
+    Try pinging one of your neighbor's VMs.  
+
+</li><li class="">
+    If the instructor's router is running, then you should be able to reach it, and the Internet.
+    From your router, run the command <code class="boxed">ping 10.141.0.1</code>.
+    (If this doesn't work, that router probably isn't running.)
+    <p>
+    If you can ping the instructor's router, then try the command <code class="boxed">ping google.com</code>.
+    This will test your DNS configuration.
+    </p>
+</li></ol>
+</div><!-- Test -->
+
+<hr/>
+
+<h4>
+Congratulations!  You've set up your LAN's access router.
+</h4>
+The class subnets now look like this:
+<img class="" src="/VM-LAN/VM-network.5.access-network.svg" width="100%" alt="RIP-joined routers" />
+Whether your neighbor subnets are available or not depends on whether your classmates are running their VMs.
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>

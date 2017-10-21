@@ -1,0 +1,427 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>LLTD, LLDP</title>
+<meta name="author" content="RAMontante"/>
+<meta name="date" content="2017-08-25"/>
+<base href="https://montcs.bloomu.edu"/>
+<style type="text/css">
+@import url("/css/generic.css");
+@import url("/css/pagefmt.css");
+@import url("/css/w3cvalid.css");
+
+body {
+    font-size:12pt;
+    width:8.5in;
+    margin:0;
+    padding:0.50in;
+}
+
+h3 {margin-bottom:1ex; margin-top:4ex;padding-top:0.5ex;border-top: 1px solid #ddd; }
+
+ol {margin-top:1ex;list-style-type:decimal;}
+ol ol {margin-top:1ex;list-style-type:lower-alpha;}
+ol li {margin-top:0ex; margin-bottom:1ex; padding:0;border-top:1px dotted #999;}
+
+.code,
+code {
+    padding-left:2px;padding-right:2px;margin-bottom:1.5ex;
+    color:#600;background:#e0e0e0;border:1px dotted #666;
+    font-size:110%;
+}
+div.code {width:25em;page-break-inside:avoid;}
+
+pre {
+    background:#e0e0e0;
+    padding-left:2px;padding-right:2px;
+}
+
+ul.compact {
+    list-style: inside square;
+}
+
+div#title {
+    float:left;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    border:1px solid red;
+}
+div#title p {
+    width: 3.45in;
+    margin: 0ex 0em 0ex 2em;
+    text-indent: -2em;
+    padding: 0;
+}
+
+div#SigBlock {
+    float:left;
+    width:3in;height:0.75in;
+    vertical-align:top;
+    border:1px solid #000;padding:1em;
+}
+
+.answerline {
+    display:inline-block;
+    width:1in;
+    border-bottom:1px solid #000;
+}
+
+</style>
+<script type="text/javascript" src="/js/utilities.js"></script>
+
+</head><body class="">
+
+<div id="content">
+<div id="title">
+  <p class="">Networking</p>
+  <p>Neighbor-Discovery Worksheet</p>
+</div><!-- title -->
+<div id="SigBlock" class="HIDE"><span class="">Name:</span></div>
+<!-- ==================================================================== -->
+
+<h1 class="clearboth">Neighbor Discovery at the Link Layer</h1>
+<img class="floatright width300" src="/VM-LAN/VM-network.0d.svg" alt="two VMs" />
+In this worksheet you will look at two protocols to discover a host's neighbors in a Local Area Network (LAN).
+You will install an LLTD responder service in your Linux VM, so that it can respond when your Windows VM tries to map the LAN.
+You will then run the LLTD mapper on Windows to see your Layer-2 connections.
+You will also set up the LLDP service in both Linux and Windows, so that both hosts can discover each other using LLDP.
+<p>
+Your client VMs should both be on the "NATNetwork" network connection, and able to ping each other.
+The LLTD protocol can be observed in wireshark, using Ethernet type 0x88d9.
+LLDP can be observed in by using Ethernet type 0x88cc.
+</p>
+
+<h2>Introduction</h2>
+<p>
+The Link Layer Topology Discovery (LLTD) protocol is a Microsoft protocol that allows a computer on a LAN to discover other devices on the LAN, and how they are connected to each other.
+Windows 7 and Vista run a mapper application that seeks other devices; if those are running a responder application then the mapper can identify their "location" and connectivity within the LAN.
+</p><p>
+The Link Layer Discovery Protocol (LLDP, IEEE 802.1ab) is an Ethernet standard for advertising and discovering hosts on a LAN.
+LLTD sends a burst of traffic from the client when a report is requested; instead of this, LLDP hosts continually send multicasts advertising their presence, and clients passively collect these multicasts to build their neighbor reports.
+</p><p>
+Neither protocol is active by default, on either Windows or Linux.
+More recent Windows versions (8.1, 10) have LLDP capability built-in but disabled (along with Microsoft's LLTD), but Windows 7 must rely on a third-party program such as the "haneWin" shareware program.
+Meanwhile Linux has LLDP servers and clients available for installation; Microsoft released (but then removed) a Linux "responder" for LLTD.
+</p><p>
+In this exercise you first build a demonstration Microsoft responder application for Linux, so that the Windows VM can determine how it is connected.
+The virtual network's topology is actually very simple; however, wireshark captures the LAN traffic involved to reveal a protocol that operates at Layer 2, without involving higher-protocols such as IP, ICMP, or ARP.
+Wireshark will show that a significant amount of network traffic is generated to determine the Layer 2 topology.
+</p><p>
+Then you will examine the LLDP network traffic, and see what information is available from this.
+Wireshark will show that the network traffic is simpler, but over the long term there is more of it.
+</p>
+
+<h2>Set up the LLTD service in Ubuntu</h2>
+<ol><li>
+    Start up Virtualbox.
+</li><li>
+    Start your Ubuntu Linux VM.
+    Open a shell (command terminal).
+
+</li><li class="">
+    Building the LLTD responder requires some preparation:
+    run the command
+<pre class="boxed">sudo apt install linux-headers-`uname -r`</pre>
+    <p>
+    <strong>Important:</strong>
+    Notice that "uname -r" is in <em>backquotes</em>, which are on the key above the Tab key on the left side of the keyboard.
+    (You can try running the command <code>uname -r</code> by itself to see what you get.)
+    </p>
+
+</li><li class="HIDE">
+    Obtain the LLTD responder's source code, unpack it, "make" the executable, and install it.
+    Enter these commands in a terminal, one at a time:
+<pre class="boxed">
+cd ~/
+cp <strong>~/MadData/DIGFOR275-All/VM-LAN/LLTD-linux.zip</strong>  ~/
+
+unzip LLTD-linux.zip
+cd LLTD
+cd "Sample Code/native-linux/"
+
+make
+sudo cp lld2d /usr/sbin/
+cd ../..
+
+</pre>
+
+</li><li class="">
+    Obtain the LLTD responder's source code, unpack it, "make" the executable, and install it.
+    Enter these commands, one at a time (note: the first line is long, scroll right to see it all):
+<pre class="boxed">
+wget  --no-check-certificate  https://montcs.bloomu.edu/VM-LAN/LLTD-software/LLTD-linux.zip
+
+unzip LLTD-linux.zip
+cd LLTD
+cd "Sample Code/native-linux/"
+
+make
+sudo cp lld2d /usr/sbin/
+cd ../..
+
+</pre>
+
+</li><li class="">
+    Configure the service-startup script for your VM.
+    <ol class=""><li class="">
+        First run <code class="boxed">ifconfig</code> again, and verify your network interface's name.
+        It should be something like "<strong>enp0s3</strong>", or "<strong>eth0</strong>", with an IP address like <span class="nowrap">10.0.2.<span class="fancyfont">&lt;something&gt;</span></span>.
+        <p>
+        If the interface name is "eth0", you're good to go &mdash; skip the rest of this step.
+        Otherwise...
+        </p>
+    </li><li>
+         Edit the file "lld2d" with a text editor such as "leafpad" &mdash; 
+<pre class="boxed">
+leafpad&nbsp;lld2d
+</pre>
+         Leafpad works just like Microsoft Notepad.
+    </li><li>
+        Change line 16 from "INTFACE=eth0" &mdash; replace the "eth0" with whatever your VM's interface name is (such as "enp0s3").
+    </li><li>
+        Save the file.
+    </li></ol>
+
+</li><li class="">
+    Now set up the service-startup script, and start the service:
+<pre class="boxed">
+chmod 755 lld2d
+<span class="">
+sudo cp lld2d /etc/init.d/
+sudo update-rc.d lld2d defaults
+
+sudo /etc/init.d/lld2d  start
+</span><span class="">
+sudo ./lld2d start
+</span>
+</pre>
+
+</li></ol>
+
+<hr/>
+
+<h2>Examine the LLTD protocol in action</h2>
+<ol><li>
+    From your Ubuntu terminal, run the command <code class="boxed">sudo&nbsp;wireshark</code>.
+    <ol class="compact"><li>
+        Select the appropriate interface, "enp0s3" or "eth0", and double-click it or click "Start" to begin wireshark running.
+    </li><li>
+        Put in a display filter:
+        <code class="boxed nowrap">eth.type==0x88d9</code>.
+        <p>
+        You won't see anything until you do the next step...
+    </li></ol>
+
+</li><li>
+    <img class="floatright" src="/VM-LAN/LLTD-map.png" alt="example LLTD map" width="285px" />
+
+    Start your Windows VM.
+</li><li>
+    Click the "Start" button, and open the "Control Panel".
+
+</li><li>
+    Under the "Network and Internet" group, choose "View network status and tasks".
+
+</li><li>
+    On the right-hand side, click on "See full map".
+
+</li><li>
+    Windows should draw out a map showing your two VMs, connected through a hub or a switch.
+    It may also show a connection through a gateway to the Internet.
+    <p>
+    The instructor's home network is shown at right, for comparison.
+    (Woo-hoo!)
+    </p>
+
+</li><li class="clearboth">
+    Look at your wireshark display (in the Linux VM).
+    You should see a number of Ethernet frames, all carrying the LLTD protocol.
+</li><li>
+    Look at the lower right-hand corner of the wireshark window.
+    How many frames are displayed by the display filter?  (Probably a lot.)
+    <p>
+    Look at the frame numbers, on the left-hand side of the upper pane.
+    Are there any missing numbers?
+    If so, then wireshark saw some frames that were not part of the LLTD exchange.
+    </p>
+
+</li><li>
+    Select one of the LLTD frames marked as a "Discover" frame in the top pane, and look at it in the middle frame.
+    <ol><li>
+        The first line describes the physical frame.
+        How many <em>bytes</em> long is it?
+        How many <em>bits</em> is that?
+    </li><li>
+        The next line describes the Link-layer protocol.
+        What kind of Ethernet is used?  (Ethernet II or Ethernet 802.3?)
+    </li><li>
+        The third line shows the Ethernet <em>payload</em>, the protocol that Ethernet is carrying.
+        In this case the payload, LLTD, is also a Link-layer protocol.
+    </li><li>
+        Click on the arrow next to the Ethernet line.
+        When opened, you should see three header fields.
+        What is the value of the Destination field?
+        What is the value of the Type field?
+        How does the Type field compare to the wireshark display filter?
+    </li><li>
+        Click once on the LLTD line (not the arrow, the line itself).
+        The bottom pane show a hexadecimal dump of the frame, and highlights the bytes that correspond to the selected protocol.
+    </li><li>
+        What is the <em>offset</em> of the first highlighted byte?
+        (<em>Hint</em>: the offsets are shown on the left, starting with "0000".
+        The second line  starts with offset 0x0010, or 16, and the first highlighted byte is probably 2 less than this.)
+        <p>
+        What is the offset of the last highlighted byte?
+        </p>
+    </li><li>
+        Subtract the first offset from the last (use a hexadecimal calculator if desired) to calculate how long the LLTD payload is.
+        How does this compare to the overall length of the frame?
+    </li><li>
+        Look at the status line, at the bottom of the wireshark window.
+        It should be telling you what protocol is selected, and its length in bytes.
+        It also tells you how many total network packets there are, and how many the display filter is showing.
+    </li></ol>
+
+</li><li>
+    Click on the arrow next to the LLTD line to expand its headers.
+    Then click on the arrow  next to the "Base header" line, to expand those fields.
+    Finally, click on the last field (should be "Number of stations:").
+    <p>
+    In the bottom pane, the header field's bytes are highlighted.
+    Are there any bytes following this header field?
+    Are they all 0-bytes?
+    If so, these are padding bytes used to make the Ethernet frame at least 60 bytes long.
+    </p>
+
+</li></ol>
+
+<hr/>
+
+<h2>Install and run LLDP in Linux and in Windows</h2>
+Now you will take a look at a different neighbor-discovery protocol, LLDP (IEEE 802.1ab).
+It is not standard on Ubuntu or on Windows 7, so you must first install programs that handle LLDP.
+
+<h3>Install and run LLDP in Linux</h3>
+<ol><li>
+    Leave wireshark running on the Linux VM (or start it up).
+    Use a new display filter: <code class="nowrap boxed">eth.type==0x88cc</code>.
+    <br/>
+
+</li><li>
+    On your Linux VM, use a terminal to install an LLDP service and client; then start the service:
+<pre class="boxed">
+sudo apt install lldpd
+sudo lldpd
+</pre>
+
+</li><li>
+    Try out the client:
+<pre class="boxed">
+lldpcli show neighbors
+</pre>
+    At the moment, nobody else is running LLDP, so you won't see much.
+
+</li><li>
+    Look at the wireshark window.
+    Wait for a minute or two, and you will see that the Linux VM is sending a "multicast" frame every 30 seconds.
+    After you've capture a few frames, <strong>stop the wireshark capture</strong>.
+    <p>
+    Click on one of the frames to select it.
+    </p>
+
+</li><li>
+    In the middle wireshark pane, click on the arrow next to the "Ethernet" line to expand the fields.
+    When opened, you should see three header fields.
+    <ol><li>
+        What is the value of the Destination field?
+        How does this compare to the value from the LLTD frame?
+    </li><li>
+        What is the value of the Type field?
+        How does this compare to the wireshark display filter?
+        How does it compare to the value from the LLTD frame?
+    </li></ol>
+
+</li><li>
+    Click on the arrow next to the "Link Layer Discovery Protocol" line to expand these fields.
+    <ol><li>
+        Click on the arrow next to the "System Description" line.
+        You should see three lines, two with "TLV" in them and one labeled "System Description".
+    </li><li>
+        "TLV" is a common acronym that means "Type-Length-Value" (or "Tag-Length-Value").
+        The values are interpreted to mean that this field is a system description, with the field's length.
+        How long is the description?
+    </li><li>
+        Select the "System Description:".
+        You should see it highlighted in the hexdump in wireshark's bottom pane.
+        Does this tell you what operating system is announcing itself?
+    </li></ol>
+
+</li><li>
+    In the upper wireshark pane, right-click on the <strong>Source</strong> value for one of the frames (should be something similar to "PcsCompu_c4:f4:8b").
+    You should get a menu of actions to take.
+    <ol><li>
+        Choose "Apply as Filter" &rarr; "...and not Selected".
+        This should produce a display filter that includes what you entered previously, and also excludes the Linux VM's MAC address.
+        (At the moment, this means you won't see any frames.)
+    </li></ol>
+
+</li></ol>
+
+<h3>Install and run LLDP in Windows</h3>
+<ol><li class="">
+    On your Windows VM, open up a web browser (IE) and browse to the address
+    <a style="font-family:monospace">https://montcs.bloomu.edu/Networking/Software/LLDP/lldp1420.exe</a>.
+    Choose to run the file, and click "Yes" to allow the program to make changes to the computer.
+    <ol><li>
+        Choose to "Run" the file.
+    </li><li>
+        Choose  "Yes" to allow the program to make changes to the computer.
+    </li><li>
+        Click "Next", accept the agreement, and continue to click "Next" to accept the defaults.
+    </li><li>
+        When done, click "Finish" to reboot Windows.
+    </li></ol>
+
+</li><li>
+    Click the "LLDP Agent" icon on the desktop, or on <strong>Start menu &rarr; All Programs &rarr; haneWIN Software &rarr; LLDP &rarr; LLDP Agent</strong>.
+    This will start the LLDP agent on your Windows VM.
+    <p>
+    You can dismiss the "Evaluation copy" dialog box.
+    </p>
+
+</li><li>
+    Within 30 seconds you should see the Linux VM listed as a neighbor, via the interface "Local Area Connection".
+    It is detectable because it is sending out those multicast frames.
+    As there are no other hosts running LLDP, this is the only neighbor you will see.
+    <p>&nbsp;</p>
+
+</li><li>
+    From the Linux VM's terminal, look at the LLDP output again:
+<pre class="boxed">
+lldpcli show neighbors
+</pre>
+    Now you should see an entry for your Windows VM.
+    It will tell you the computer's name, its processor and operating system, and its IP address, along with some other information.
+
+</li><li>
+    Look at the wireshark window again.
+    There should be new LLDP frames, these being multicasts from the Windows VM.
+
+</li></ol>
+
+<h2>
+Congratulations!  You've mapped your Local-Area Network at the Data-Link layer.
+</h2>
+Shut down wireshark and both VMs.
+You're done with this lab.
+<p>
+A last question to think about:
+"What are the security implications of running this protocol on a network?"
+</p>
+
+</div><!-- content -->
+<script type="text/javascript">ts_validate();</script>
+</body></html>
